@@ -4,6 +4,7 @@ import 'package:attendance_system/common/base_page.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_system/login/common/menubar.dart';
 import 'package:attendance_system/common/date_time_converter.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Dashboard extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -100,7 +101,7 @@ class _DashboardState extends State<Dashboard> {
               : errorMessage.isNotEmpty
               ? Center(child: Text(errorMessage))
               : Padding(
-                padding: const EdgeInsets.all(25),
+                padding: EdgeInsets.all(25.r),
                 child: SingleChildScrollView(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -112,7 +113,7 @@ class _DashboardState extends State<Dashboard> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: 20.h),
 
                       /// Status Card
                       Card(
@@ -121,7 +122,7 @@ class _DashboardState extends State<Dashboard> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: EdgeInsets.all(16.r),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -138,7 +139,7 @@ class _DashboardState extends State<Dashboard> {
                                   Icon(Icons.access_time, color: Colors.blue),
                                 ],
                               ),
-                              const SizedBox(height: 10),
+                              SizedBox(height: 10.h),
                               Text("Status: ${status ?? '-'}"),
                               Text("Check In: ${formatFullTime(checkInTime)}"),
                               Text(
@@ -188,68 +189,68 @@ class _DashboardState extends State<Dashboard> {
                       const SizedBox(height: 20),
 
                       /// Leave Request Card (placeholder content)
-                      Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    "Recent Leave Requests",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Icon(
-                                    Icons.calendar_today_outlined,
-                                    color: Colors.orange,
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              SingleChildScrollView(
-                                scrollDirection: Axis.horizontal,
-                                child: DataTable(
-                                  headingRowColor:
-                                      const MaterialStatePropertyAll(
-                                        Colors.grey,
-                                      ),
-                                  columns: const [
-                                    DataColumn(label: Text('LEAVE TYPE')),
-                                    DataColumn(label: Text('START DATE')),
-                                    DataColumn(label: Text('END DATE')),
-                                    DataColumn(label: Text('STATUS')),
-                                    DataColumn(label: Text('REQUESTED ON')),
-                                  ],
-                                  rows: const [
-                                    DataRow(
-                                      cells: [
-                                        DataCell(Text('')),
-                                        DataCell(Text('')),
-                                        DataCell(Text('')),
-                                        DataCell(Text('')),
-                                        DataCell(Text('')),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              const Center(
-                                child: Text("No leave requests found"),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                      // Card(
+                      //   elevation: 2,
+                      //   shape: RoundedRectangleBorder(
+                      //     borderRadius: BorderRadius.circular(12),
+                      //   ),
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.all(16),
+                      //     child: Column(
+                      //       crossAxisAlignment: CrossAxisAlignment.start,
+                      //       children: [
+                      //         const Row(
+                      //           mainAxisAlignment:
+                      //               MainAxisAlignment.spaceBetween,
+                      //           children: [
+                      //             Text(
+                      //               "Recent Leave Requests",
+                      //               style: TextStyle(
+                      //                 fontWeight: FontWeight.bold,
+                      //               ),
+                      //             ),
+                      //             Icon(
+                      //               Icons.calendar_today_outlined,
+                      //               color: Colors.orange,
+                      //             ),
+                      //           ],
+                      //         ),
+                      //         const SizedBox(height: 20),
+                      //         SingleChildScrollView(
+                      //           scrollDirection: Axis.horizontal,
+                      //           child: DataTable(
+                      //             headingRowColor:
+                      //                 const MaterialStatePropertyAll(
+                      //                   Colors.grey,
+                      //                 ),
+                      //             columns: const [
+                      //               DataColumn(label: Text('LEAVE TYPE')),
+                      //               DataColumn(label: Text('START DATE')),
+                      //               DataColumn(label: Text('END DATE')),
+                      //               DataColumn(label: Text('STATUS')),
+                      //               DataColumn(label: Text('REQUESTED ON')),
+                      //             ],
+                      //             rows: const [
+                      //               DataRow(
+                      //                 cells: [
+                      //                   DataCell(Text('')),
+                      //                   DataCell(Text('')),
+                      //                   DataCell(Text('')),
+                      //                   DataCell(Text('')),
+                      //                   DataCell(Text('')),
+                      //                 ],
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         ),
+                      //         const SizedBox(height: 10),
+                      //         const Center(
+                      //           child: Text("No leave requests found"),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   ),
+                      // ),
                     ],
                   ),
                 ),

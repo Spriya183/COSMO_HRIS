@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:attendance_system/api_services/authentication_api_service.dart';
-import 'package:attendance_system/login/dashboard.dart';
-import 'package:attendance_system/login/loginpage.dart';
+import 'dart:async'; // for Timer
+import 'package:attendance_system/login/login_page.dart'; // for Timer
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,39 +13,42 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    checkAuthentication();
-  }
 
-  Future<void> checkAuthentication() async {
-    final result = await AuthenticationApiService.authentication();
-    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
-    if (result['status'] == true) {
-      // Authenticated, go to Dashboard
+    // Delay for 2 seconds and then navigate
+    Timer(const Duration(seconds: 2), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder:
-              (context) => Dashboard(
-                scaffoldKey: _scaffoldKey,
-                onDrawerChanged: (isOpen) {
-                  // Handle drawer open/close logic here if needed
-                  print("Drawer is ${isOpen ? 'opened' : 'closed'}");
-                },
-              ),
-        ),
+          builder: (context) => Loginpage(),
+        ), // replace with your next page
       );
-    } else {
-      // Not Authenticated, go to Login
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => Loginpage()),
-      );
-    }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F111C), // dark background
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // App logo or name
+            const Icon(Icons.lock, size: 80, color: Colors.blueAccent),
+            const SizedBox(height: 20),
+            const Text(
+              'Attendance System',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 40),
+            const CircularProgressIndicator(color: Colors.blueAccent),
+          ],
+        ),
+      ),
+    );
   }
 }

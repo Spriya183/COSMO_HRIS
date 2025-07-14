@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:attendance_system/login/attendance_page.dart';
 import 'package:attendance_system/login/dashboard.dart';
 import 'package:attendance_system/login/profile.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BottomNavBar extends StatefulWidget {
   const BottomNavBar({super.key});
@@ -11,7 +12,7 @@ class BottomNavBar extends StatefulWidget {
 }
 
 class _BottomNavBarState extends State<BottomNavBar> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   bool _isDrawerOpen = false;
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -45,8 +46,14 @@ class _BottomNavBarState extends State<BottomNavBar> {
         scaffoldKey: _scaffoldKey,
         onDrawerChanged: _handleDrawerChanged,
       ),
-      const Attentancepage(),
-      const ProfilePage(),
+      Attentancepage(
+        scaffoldKey: _scaffoldKey,
+        onDrawerChanged: _handleDrawerChanged,
+      ),
+      ProfilePage(
+        scaffoldKey: _scaffoldKey,
+        onDrawerChanged: _handleDrawerChanged,
+      ),
     ];
 
     return WillPopScope(
@@ -57,19 +64,19 @@ class _BottomNavBarState extends State<BottomNavBar> {
             _isDrawerOpen
                 ? null
                 : Container(
-                  margin: const EdgeInsets.all(12),
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 8,
-                    horizontal: 12,
+                  margin: EdgeInsets.all(12.r),
+                  padding: EdgeInsets.symmetric(
+                    vertical: 8.h,
+                    horizontal: 12.w,
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black12.withOpacity(0.3),
-                        spreadRadius: 3,
-                        blurRadius: 8,
+                        spreadRadius: 3.r,
+                        blurRadius: 8.r,
                         offset: const Offset(0, -3),
                       ),
                     ],

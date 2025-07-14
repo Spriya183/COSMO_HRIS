@@ -1,3 +1,6 @@
+import 'package:attendance_system/biomatric/biomatric.dart';
+import 'package:attendance_system/common/custom_button.dart';
+import 'package:attendance_system/login/common/forget_password_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_system/common/custom_textfield.dart';
 import 'package:attendance_system/common/validation.dart';
@@ -7,6 +10,8 @@ import 'package:attendance_system/api_services/login_api_service.dart';
 import 'package:attendance_system/common/forget_password.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:local_auth/local_auth.dart';
 
 class Loginpage extends StatefulWidget {
   const Loginpage({super.key});
@@ -19,18 +24,37 @@ class _LoginpageState extends State<Loginpage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  bool alreadyEnabled = false;
 
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
+    checkBiometricStatus();
+  }
+
+  Future<void> checkBiometricStatus() async {
+    final storage = FlutterSecureStorage();
+    final isEnabled = await storage.read(key: 'biometric_enabled');
+    setState(() {
+      alreadyEnabled = isEnabled == 'true';
+    });
+  }
+
+  void biometricAutoLogin(String username, String password) {
+    setState(() {
+      emailController.text = username;
+      passwordController.text = password;
+    });
+    handleLogin();
   }
 
   Future<void> handleLogin() async {
     if (_formKey.currentState!.validate()) {
       final email = emailController.text.trim();
       final password = passwordController.text.trim();
+      // _askToEnableBiometric(emailController.text, passwordController.text);
 
       showDialog(
         context: context,
@@ -51,6 +75,7 @@ class _LoginpageState extends State<Loginpage> {
             context,
           ).showSnackBar(SnackBar(content: Text(response['message'])));
 
+          await _askToEnableBiometric(email, password);
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(builder: (context) => const BottomNavBar()),
@@ -65,6 +90,57 @@ class _LoginpageState extends State<Loginpage> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+      }
+    }
+  }
+
+  //biomatric
+  Future<void> _askToEnableBiometric(String username, String password) async {
+    final _secureStorage = const FlutterSecureStorage();
+
+    final alreadyEnabled =
+        await _secureStorage.read(key: 'biometric_enabled') == 'true';
+    if (alreadyEnabled) return;
+
+    bool? enable = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text("Enable Biometric Login"),
+            content: const Text(
+              "Would you like to enable biometric login for faster sign-in next time?",
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("No"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text("Yes"),
+              ),
+            ],
+          ),
+    );
+
+    if (enable == true) {
+      final auth = LocalAuthentication();
+      final didAuthenticate = await auth.authenticate(
+        localizedReason: 'Scan your fingerprint to enable biometric login',
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+          stickyAuth: true,
+        ),
+      );
+
+      if (didAuthenticate) {
+        await _secureStorage.write(key: 'biometric_enabled', value: 'true');
+        await _secureStorage.write(key: 'username', value: username);
+        await _secureStorage.write(key: 'password', value: password);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Biometric login enabled")),
+        );
       }
     }
   }
@@ -123,15 +199,15 @@ class _LoginpageState extends State<Loginpage> {
                   Container(
                     width: double.infinity,
                     height: 480.h,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 25,
-                      vertical: 20,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 25.w,
+                      vertical: 20.h,
                     ),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(40),
-                        topRight: Radius.circular(40),
+                        topLeft: Radius.circular(40.r),
+                        topRight: Radius.circular(40.r),
                       ),
                     ),
 
@@ -169,62 +245,63 @@ class _LoginpageState extends State<Loginpage> {
                           ),
                           SizedBox(height: 10.h),
 
-                          ForgetPassword(),
-
-                          SizedBox(
-                            width: double.infinity,
-
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xff004E64),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 15,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) => ForgotPasswordPage(),
+                                    ),
+                                  );
+                                },
+                                child: const Text(
+                                  "Forgot Password?",
+                                  style: TextStyle(
+                                    color: Color(0xff666666A8),
+                                    fontSize: 16,
+                                    fontFamily: 'roboto',
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ),
+                            ],
+                          ),
 
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  handleLogin();
-                                }
-                              },
-
-                              child: const Text(
-                                'LOG IN',
-                                style: TextStyle(color: Colors.white),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              CustomButton(
+                                width: 270.w,
+                                text: 'LOG IN',
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    handleLogin();
+                                  }
+                                },
                               ),
-                            ),
+
+                              BiometricLoginScreen(onLogin: biometricAutoLogin),
+                            ],
                           ),
                           SizedBox(height: 15.h),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 15,
+
+                          CustomButton(
+                            backgroundColor: Colors.white,
+                            borderColor: const Color(0xff004E64),
+                            textColor: Color(0xff004E64),
+                            text: 'Quick Attendance',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const QuickAttendance(),
                                 ),
-                                side: BorderSide(
-                                  color: Colors.grey,
-                                  width: 1.w,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder:
-                                        (context) => const QuickAttendance(),
-                                  ),
-                                );
-                              },
-                              child: const Text(
-                                'Quick Attendance',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                            ),
+                              );
+                            },
                           ),
                         ],
                       ),

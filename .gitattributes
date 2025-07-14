@@ -1,0 +1,38 @@
+# Handle line endings automatically
+* text=auto
+
+# Dart and related source files - treat as text
+*.dart text
+*.yaml text
+*.json text
+*.html text
+*.css text
+*.js text
+
+# Flutter/Dart platform-specific files
+*.swift text
+*.kt text
+*.java text
+*.h text
+*.m text
+*.mm text
+*.cc text
+*.cpp text
+*.c text
+*.cmake text
+
+# Lock and config files
+*.lock text
+*.g.dart text
+*.g.h text
+*.g.cc text
+
+# Treat image files as binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+
+# Prevent normalization of already-normalized files
+pubspec.lock -text

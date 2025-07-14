@@ -27,6 +27,7 @@ class RetriveLeaveRequestDataApiServices {
           if (sessionCookie != null) 'Cookie': sessionCookie,
         },
       );
+
       print('Status code: ${response.statusCode}');
       print('Raw response: ${response.body}');
       print('Headers: ${response.headers}');
@@ -40,13 +41,13 @@ class RetriveLeaveRequestDataApiServices {
 
       if (response.statusCode == 200) {
         final responseBody = jsonDecode(response.body);
-        final LeaveRequestResponse = retriveLeaveRequestData.fromJson(
-          responseBody,
-        );
+
+        final parsedResponse = retriveLeaveRequestData.fromJson(responseBody);
 
         return {
-          'message': LeaveRequestResponse.message,
-          'data': LeaveRequestResponse.data,
+          'code': parsedResponse.code,
+          'message': parsedResponse.message,
+          'data': parsedResponse.data,
         };
       } else {
         return {

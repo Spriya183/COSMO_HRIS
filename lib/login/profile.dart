@@ -2,9 +2,16 @@ import 'package:attendance_system/common/base_page.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_system/api_services/employee_authentication_api_services.dart';
 import 'package:attendance_system/common/date_time_converter.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfilePage extends StatefulWidget {
-  const ProfilePage({super.key});
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  final Function(bool) onDrawerChanged;
+  const ProfilePage({
+    super.key,
+    required this.scaffoldKey,
+    required this.onDrawerChanged,
+  });
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -61,10 +68,20 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return BasePage(
+      scaffoldKey: widget.scaffoldKey,
+      onDrawerChanged: widget.onDrawerChanged,
       title: const Text(
         'Profile Information',
         style: TextStyle(color: Colors.white),
       ),
+      leadingWidget: Builder(
+        builder:
+            (context) => IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
+      ),
+
       showBackButton: false,
       centerTitle: true,
       colors: Color(0xff004E64),
@@ -77,51 +94,48 @@ class _ProfilePageState extends State<ProfilePage> {
               : SingleChildScrollView(
                 child: Column(
                   children: [
-                    const SizedBox(height: 30),
+                    SizedBox(height: 30.h),
                     CircleAvatar(
-                      radius: 45,
+                      radius: 45.r,
                       backgroundColor: Colors.grey[300],
-                      child: const Icon(
+                      child: Icon(
                         Icons.person,
-                        size: 50,
+                        size: 50.sp,
                         color: Colors.black54,
                       ),
                     ),
-                    const SizedBox(height: 12),
+                    SizedBox(height: 12.h),
                     Text(
                       fullName ?? '',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        fontSize: 20..sp,
                       ),
                     ),
 
                     Text(
                       position ?? '',
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                       ),
                     ),
                     Text(
                       email ?? '',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
-                      ),
+                      style: TextStyle(fontSize: 14.sp, color: Colors.black54),
                     ),
-                    const SizedBox(height: 30),
+                    SizedBox(height: 30.h),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: EdgeInsets.symmetric(horizontal: 16.w),
                       child: Container(
-                        padding: const EdgeInsets.all(20),
+                        padding: EdgeInsets.all(20.r),
                         decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.circular(18),
-                          boxShadow: const [
+                          borderRadius: BorderRadius.circular(18.r),
+                          boxShadow: [
                             BoxShadow(
                               color: Colors.black12,
-                              blurRadius: 6,
+                              blurRadius: 6.r,
                               offset: Offset(0, 2),
                             ),
                           ],
@@ -135,23 +149,23 @@ class _ProfilePageState extends State<ProfilePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Icon(Icons.phone, color: Colors.black54),
-                                const SizedBox(width: 16),
+                                SizedBox(width: 16.w),
                                 Expanded(
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
+                                      Text(
                                         "Phone Number",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                         ),
                                       ),
                                       Flexible(
                                         child: Text(
                                           phoneNumber ?? '-',
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(fontSize: 14.sp),
                                           textAlign: TextAlign.right,
                                         ),
                                       ),
@@ -160,7 +174,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 15),
+                            SizedBox(height: 15.h),
                             const Divider(),
 
                             // Address
@@ -168,23 +182,23 @@ class _ProfilePageState extends State<ProfilePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Icon(Icons.home, color: Colors.black54),
-                                const SizedBox(width: 16),
+                                SizedBox(width: 16.w),
                                 Expanded(
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
+                                      Text(
                                         "Address",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                         ),
                                       ),
                                       Flexible(
                                         child: Text(
                                           address ?? '-',
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(fontSize: 14.sp),
                                           textAlign: TextAlign.right,
                                         ),
                                       ),
@@ -193,7 +207,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 15),
+                            SizedBox(height: 15.h),
                             const Divider(),
 
                             // Department
@@ -201,23 +215,23 @@ class _ProfilePageState extends State<ProfilePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Icon(Icons.domain, color: Colors.black54),
-                                const SizedBox(width: 16),
+                                SizedBox(width: 16.w),
                                 Expanded(
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
+                                      Text(
                                         "Department",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                         ),
                                       ),
                                       Flexible(
                                         child: Text(
                                           department ?? '-',
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(fontSize: 14.sp),
                                           textAlign: TextAlign.right,
                                         ),
                                       ),
@@ -226,7 +240,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 15),
+                            SizedBox(height: 15.h),
                             const Divider(),
 
                             // Date of Birth
@@ -237,23 +251,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Icons.calendar_today,
                                   color: Colors.black54,
                                 ),
-                                const SizedBox(width: 16),
+                                SizedBox(width: 16.w),
                                 Expanded(
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
+                                      Text(
                                         "Date of Birth",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                         ),
                                       ),
                                       Flexible(
                                         child: Text(
                                           formatDateOnly(dob),
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(fontSize: 14.sp),
                                           textAlign: TextAlign.right,
                                         ),
                                       ),
@@ -262,7 +276,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 15),
+                            SizedBox(height: 15.h),
                             const Divider(),
 
                             // Date of Joining
@@ -273,23 +287,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Icons.date_range,
                                   color: Colors.black54,
                                 ),
-                                const SizedBox(width: 16),
+                                SizedBox(width: 16.w),
                                 Expanded(
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
+                                      Text(
                                         "Date of Joining",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                         ),
                                       ),
                                       Flexible(
                                         child: Text(
                                           formatDateOnly(dateOfJoining),
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(fontSize: 14.sp),
                                           textAlign: TextAlign.right,
                                         ),
                                       ),
@@ -298,7 +312,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 15),
+                            SizedBox(height: 15.h),
                             const Divider(),
 
                             // Gender
@@ -306,23 +320,23 @@ class _ProfilePageState extends State<ProfilePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Icon(Icons.person, color: Colors.black54),
-                                const SizedBox(width: 16),
+                                SizedBox(width: 16.w),
                                 Expanded(
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
+                                      Text(
                                         "Gender",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                         ),
                                       ),
                                       Flexible(
                                         child: Text(
                                           gender ?? '-',
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(fontSize: 14.sp),
                                           textAlign: TextAlign.right,
                                         ),
                                       ),
@@ -331,7 +345,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 15),
+                            SizedBox(height: 15.h),
                             const Divider(),
 
                             // Status
@@ -342,23 +356,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Icons.verified_user,
                                   color: Colors.black54,
                                 ),
-                                const SizedBox(width: 16),
+                                SizedBox(width: 16.w),
                                 Expanded(
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
+                                      Text(
                                         "Status",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                         ),
                                       ),
                                       Flexible(
                                         child: Text(
                                           status ?? '-',
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(fontSize: 14.sp),
                                           textAlign: TextAlign.right,
                                         ),
                                       ),
@@ -367,7 +381,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 15),
+                            SizedBox(height: 15.h),
                             const Divider(),
 
                             // Blood Group
@@ -378,23 +392,23 @@ class _ProfilePageState extends State<ProfilePage> {
                                   Icons.bloodtype,
                                   color: Colors.black54,
                                 ),
-                                const SizedBox(width: 16),
+                                SizedBox(width: 16.w),
                                 Expanded(
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const Text(
+                                      Text(
                                         "Blood Group",
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 14,
+                                          fontSize: 14.sp,
                                         ),
                                       ),
                                       Flexible(
                                         child: Text(
                                           bloodGroup ?? '-',
-                                          style: TextStyle(fontSize: 14),
+                                          style: TextStyle(fontSize: 14.sp),
                                           textAlign: TextAlign.right,
                                         ),
                                       ),

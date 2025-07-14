@@ -1,3 +1,4 @@
+import 'package:attendance_system/login/common/menubar.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_system/common/base_page.dart';
 import 'package:attendance_system/login/common/body_container.dart';
@@ -5,9 +6,17 @@ import 'package:attendance_system/login/common/table.dart';
 import 'package:attendance_system/api_services/checkin_api_services.dart';
 import 'package:attendance_system/api_services/checkout_api_services.dart';
 import 'package:attendance_system/login/common/attendance_request_page.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Attentancepage extends StatefulWidget {
-  const Attentancepage({super.key});
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  final Function(bool) onDrawerChanged;
+
+  const Attentancepage({
+    super.key,
+    required this.scaffoldKey,
+    required this.onDrawerChanged,
+  });
 
   @override
   State<Attentancepage> createState() => _HomepageState();
@@ -47,17 +56,27 @@ class _HomepageState extends State<Attentancepage> {
   @override
   Widget build(BuildContext context) {
     return BasePage(
+      scaffoldKey: widget.scaffoldKey,
+      onDrawerChanged: widget.onDrawerChanged,
       title: const Text('Attendance', style: TextStyle(color: Colors.white)),
       showBackButton: false,
       centerTitle: true,
+      drawer: const MenubarDrawer(),
+      leadingWidget: Builder(
+        builder:
+            (context) => IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
+      ),
       colors: const Color(0xff004E64),
       bodyColor: Colors.white,
       body: Padding(
-        padding: const EdgeInsets.all(25),
+        padding: EdgeInsets.all(25.r),
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(height: 30),
+              SizedBox(height: 30.h),
               Row(
                 children: [
                   Expanded(
@@ -70,7 +89,7 @@ class _HomepageState extends State<Attentancepage> {
                       onPressed: _handleCheckIn,
                     ),
                   ),
-                  const SizedBox(width: 10),
+                  SizedBox(width: 10.h),
                   Expanded(
                     child: InnerContainer(
                       title: 'Check Out',
@@ -83,7 +102,7 @@ class _HomepageState extends State<Attentancepage> {
                   ),
                 ],
               ),
-              const SizedBox(height: 10),
+              SizedBox(height: 10.h),
               InnerContainer(
                 title: 'Attendance Request',
                 titlecolor: Colors.black,
@@ -99,12 +118,12 @@ class _HomepageState extends State<Attentancepage> {
                   );
                 },
               ),
-              const SizedBox(height: 50),
+              SizedBox(height: 50.h),
 
               // ✅ Use GlobalKey here to refresh table dynamically
               Tablepage(key: tableKey),
 
-              const SizedBox(height: 100),
+              SizedBox(height: 100.h),
             ],
           ),
         ),

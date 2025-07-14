@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:attendance_system/model/attendance_model/check_in_model.dart';
 import 'package:attendance_system/service/config/config.dart';
 
 class CheckinApiServices {
@@ -45,14 +44,17 @@ class CheckinApiServices {
         await _saveSessionCookie(cookie);
         print('Session cookie saved: $cookie');
       }
+      print("CheckIn API status: ${response.statusCode}");
+      print("CheckOut API response: ${response.body}");
 
-      final responseData = jsonDecode(response.body);
-      final checkInResponse = CheckIn.fromJson(responseData);
+      final responseBody = jsonDecode(response.body);
+      final code = responseBody['code'];
+      final message = responseBody['message'];
 
-      if (checkInResponse.code == 200) {
-        return {'status': true, 'message': checkInResponse.message};
+      if (code == 200) {
+        return {'status': true, 'message': message};
       } else {
-        return {'status': false, 'message': checkInResponse.message};
+        return {'status': false, 'message': message};
       }
     } catch (e) {
       print('Check-In error: $e');

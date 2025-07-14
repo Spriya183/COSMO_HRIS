@@ -53,11 +53,11 @@ class retriveLeaveRequestData {
   Map<String, dynamic> toJson() {
     return {
       'startDate': startDate,
-      'status': status?.toJson(),
+      'status': status,
       'endDate': endDate,
       'reason': reason,
       'createdAt': createdAt,
-      'leavePolicy': leavePolicy?.toJson(),
+      'leavePolicy': leavePolicy,
     };
   }
 }

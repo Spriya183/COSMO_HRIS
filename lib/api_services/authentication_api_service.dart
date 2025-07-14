@@ -1,34 +1,30 @@
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'dart:async';
-import 'package:attendance_system/service/config/config.dart';
+// import 'package:http/http.dart' as http;
+// import 'dart:convert';
+// import 'dart:async';
+// import 'package:attendance_system/service/config/config.dart';
 
-class AuthenticationApiService {
-  static Future<Map<String, dynamic>> authentication() async {
-    final url = Config.getAuthentication;
+// class AuthenticationApiService {
+//   static Future<Map<String, dynamic>> authentication() async {
+//     final url = Config.getAuthentication;
 
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {'Content-Type': 'application/json'},
-      );
+//     try {
+//       final response = await http.post(
+//         Uri.parse(url),
+//         headers: {'Content-Type': 'application/json'},
+//       );
 
-      final responseBody = jsonDecode(response.body);
-      final AuthenticationResponse = authentication.fromJson(responseBody);
+//       final responseBody = jsonDecode(response.body);
+//       final code = responseBody['code'];
+//       final message = responseBody['message'];
 
-      if (response.statusCode == 200 && AuthenticationResponse.code == 200) {
-        print('Authentication success: $responseBody');
-        return {'status': true, 'message': AuthenticationResponse.message};
-      } else {
-        return {'status': false, 'message': AuthenticationResponse.message};
-      }
-    } catch (e) {
-      print('Authentication error: ${e.toString()}');
-      return {'status': false, 'message': 'You are not Authenticated'};
-    }
-  }
-}
-
-extension on Future<Map<String, dynamic>> Function() {
-  fromJson(responseBody) {}
-}
+//       return {'code': code, 'status': code == 200, 'message': message};
+//     } catch (e) {
+//       print('Authentication error: ${e.toString()}');
+//       return {
+//         'code': 401,
+//         'status': false,
+//         'message': 'Authentication failed due to an exception',
+//       };
+//     }
+//   }
+// }

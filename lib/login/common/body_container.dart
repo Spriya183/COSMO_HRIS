@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class InnerContainer extends StatelessWidget {
   final String title;
@@ -23,16 +24,16 @@ class InnerContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 20),
-      padding: const EdgeInsets.all(16),
+      margin: EdgeInsets.only(bottom: 20.h),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: borderColor, width: 0.5),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
             color: Colors.black12,
-            blurRadius: 10,
+            blurRadius: 10.r,
             offset: Offset(2, 4),
           ),
         ],
@@ -45,22 +46,22 @@ class InnerContainer extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 20.sp,
                   fontWeight: FontWeight.w600,
                   color: titlecolor,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
           SizedBox(
             width: double.infinity,
-            height: 50,
+            height: 50.h,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: backgroundColor,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
               ),
               onPressed: onPressed,

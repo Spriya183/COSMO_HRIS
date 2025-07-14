@@ -1,10 +1,10 @@
-import 'package:attendance_system/login/login_page.dart';
-import 'package:attendance_system/login/splash_screen.dart';
+import 'package:attendance_system/core/common/custom_connection_status_handler.dart';
+import 'package:attendance_system/feature/login/login_page.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:attendance_system/common/connection_status_handler.dart';
 
 final RouteObserver<PageRoute> routeObserver = RouteObserver<PageRoute>();
 

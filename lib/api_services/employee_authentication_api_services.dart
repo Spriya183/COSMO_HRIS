@@ -1,9 +1,9 @@
-import 'package:attendance_system/model/authenticate_model/employee_authentication_model.dart';
+import 'package:attendance_system/model/response_model/employee_details_model.dart';
+import 'package:attendance_system/service/api_url.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
-import 'package:attendance_system/service/config/config.dart';
 
 class EmployeeAuthenticationApiServices {
   //1

@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:attendance_system/service/config/config.dart';
+import 'package:attendance_system/service/api_url.dart';
 import 'package:http/http.dart' as http;
 
 class ForgetPasswordApiServices {

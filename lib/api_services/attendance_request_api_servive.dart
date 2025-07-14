@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'package:attendance_system/model/attendance_model/attendance_request_model.dart';
+import 'package:attendance_system/service/api_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:attendance_system/service/config/config.dart';
 
 class AttendanceRequestApiService {
   static final _storage = FlutterSecureStorage();
@@ -61,16 +60,14 @@ class AttendanceRequestApiService {
         print('Session cookie saved: $cookie');
       }
 
-      final responseData = jsonDecode(response.body);
-      if (responseData == null) {
-        return {'status': false, 'message': 'Empty response from server'};
-      }
-      final requestResponse = AttendanceRequest.fromJson(responseData);
+      final responseBody = jsonDecode(response.body);
+      final code = responseBody['code'];
+      final message = responseBody['message'];
 
-      if (requestResponse.code == 201) {
-        return {'status': true, 'message': requestResponse.message};
+      if (code == 201) {
+        return {'status': true, 'message': message};
       } else {
-        return {'status': false, 'message': requestResponse.message};
+        return {'status': false, 'message': message};
       }
     } catch (e) {
       print('Attendance request error: $e');

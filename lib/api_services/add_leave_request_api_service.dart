@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'package:attendance_system/model/attendance_model/add_leave_request_model.dart';
+import 'package:attendance_system/service/api_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:attendance_system/service/config/config.dart';
 
 class AddLeaveRequestApiService {
   static final _storage = FlutterSecureStorage();
@@ -59,17 +58,14 @@ class AddLeaveRequestApiService {
         print('Session cookie saved: $cookie');
       }
 
-      final responseData = jsonDecode(response.body);
-      if (responseData == null) {
-        return {'status': false, 'message': 'Empty response from server'};
-      }
+      final responseBody = jsonDecode(response.body);
+      final code = responseBody['code'];
+      final message = responseBody['message'];
 
-      final leaveResponse = AddLeaveRequest.fromJson(responseData);
-
-      if (leaveResponse.code == 201) {
-        return {'status': true, 'message': leaveResponse.message};
+      if (code == 201) {
+        return {'status': true, 'message': message};
       } else {
-        return {'status': false, 'message': leaveResponse.message};
+        return {'status': false, 'message': message};
       }
     } catch (e) {
       print('Leave request error: $e');

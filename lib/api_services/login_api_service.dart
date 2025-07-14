@@ -1,8 +1,8 @@
-import 'package:attendance_system/model/authenticate_model/login_model.dart';
+import 'package:attendance_system/model/request_model/login_request_model.dart';
+import 'package:attendance_system/service/api_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
-import 'package:attendance_system/service/config/config.dart';
 
 class LoginApiService {
   static final _storage = FlutterSecureStorage();

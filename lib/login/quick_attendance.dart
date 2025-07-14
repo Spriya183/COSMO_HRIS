@@ -1,9 +1,10 @@
+import 'package:attendance_system/common/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_system/common/custom_textfield.dart';
 import 'package:attendance_system/common/validation.dart';
 import 'package:attendance_system/common/custom_dropdown.dart';
 import 'package:attendance_system/api_services/quick_attendance_api_services.dart';
-import 'package:attendance_system/login/loginpage.dart';
+import 'package:attendance_system/login/login_page.dart';
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -81,7 +82,7 @@ class _QuickAttendanceState extends State<QuickAttendance> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  const SizedBox(height: 110),
+                  SizedBox(height: 110.h),
 
                   // Avatar
                   Container(
@@ -92,7 +93,7 @@ class _QuickAttendanceState extends State<QuickAttendance> {
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black26,
-                          blurRadius: 10,
+                          blurRadius: 10.r,
                           offset: Offset(0, 4),
                         ),
                       ],
@@ -111,29 +112,29 @@ class _QuickAttendanceState extends State<QuickAttendance> {
                   SizedBox(height: 15.h),
 
                   // Title text
-                  const Text(
+                  Text(
                     'COSMO HRIS',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 20.sp,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
 
-                  const SizedBox(height: 55),
+                  SizedBox(height: 55.h),
 
                   Container(
                     width: double.infinity,
                     height: 478.h,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 25,
-                      vertical: 20,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 25.w,
+                      vertical: 20.h,
                     ),
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30),
-                        topRight: Radius.circular(30),
+                        topLeft: Radius.circular(30.r),
+                        topRight: Radius.circular(30.r),
                       ),
                     ),
 
@@ -142,15 +143,15 @@ class _QuickAttendanceState extends State<QuickAttendance> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
+                          Text(
                             'Fill your details',
                             style: TextStyle(
                               color: Color(0xff004E64),
-                              fontSize: 20,
+                              fontSize: 20.sp,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(height: 20.h),
                           CustomTextfield(
                             controller: emailController,
                             hint: 'Enter Your Email',
@@ -158,16 +159,16 @@ class _QuickAttendanceState extends State<QuickAttendance> {
                             prefixIcon: const Icon(Icons.email),
                             validator: Validation.validUserName,
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(height: 20.h),
                           CustomTextfield(
                             controller: passwordController,
                             hint: 'Enter your password',
                             label: 'Password',
                             isPassword: true,
-                            prefixIcon: const Icon(Icons.lock),
+                            prefixIcon: Icon(Icons.lock),
                             validator: Validation.passwordValidation,
                           ),
-                          const SizedBox(height: 20),
+                          SizedBox(height: 20.h),
 
                           CustomDropdown(
                             selectedValue: selectedOption,
@@ -179,58 +180,30 @@ class _QuickAttendanceState extends State<QuickAttendance> {
                               });
                             },
                           ),
-                          const SizedBox(height: 30),
+                          SizedBox(height: 30.h),
 
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xff004E64),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 15,
-                                ),
-                              ),
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  HandlequickAttendance();
-                                }
-                              },
-                              child: const Text(
-                                'Submit Attendance',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
+                          CustomButton(
+                            text: 'Submit Attendance',
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                HandlequickAttendance();
+                              }
+                            },
                           ),
-                          const SizedBox(height: 20),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 15,
+
+                          SizedBox(height: 20.h),
+                          CustomButton(
+                            backgroundColor: Colors.white,
+                            textColor: Color(0xff004E64),
+                            text: 'Log In',
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Loginpage(),
                                 ),
-                                side: const BorderSide(
-                                  color: Colors.grey,
-                                  width: 1,
-                                ),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                              ),
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const Loginpage(),
-                                  ),
-                                );
-                              },
-                              child: const Text(
-                                'Log In',
-                                style: TextStyle(color: Colors.black),
-                              ),
-                            ),
+                              );
+                            },
                           ),
                         ],
                       ),

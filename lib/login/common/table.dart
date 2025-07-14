@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:attendance_system/api_services/attendance_record_api_services.dart';
 import 'package:attendance_system/model/attendance_model/attendance_response_model.dart';
 import 'package:attendance_system/common/date_time_converter.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Tablepage extends StatefulWidget {
   const Tablepage({super.key});
@@ -41,12 +42,12 @@ class TablepageState extends State<Tablepage> {
     return Center(
       child: Column(
         children: [
-          const SizedBox(height: 20),
-          const Text(
+          SizedBox(height: 20.h),
+          Text(
             'Attendance Table',
-            style: TextStyle(color: Colors.black, fontSize: 20),
+            style: TextStyle(color: Colors.black, fontSize: 20.sp),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: DataTable(

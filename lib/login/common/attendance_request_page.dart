@@ -1,6 +1,7 @@
 import 'package:attendance_system/api_services/attendance_request_api_servive.dart';
 import 'package:attendance_system/common/base_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class RequestAttendancePage extends StatefulWidget {
   const RequestAttendancePage({super.key});
@@ -99,16 +100,16 @@ class _RequestAttendancePageState extends State<RequestAttendancePage> {
       centerTitle: true,
       colors: const Color(0xff004E64),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             const Text(
               "Request Type",
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             Row(
               children: [
                 Radio<String>(
@@ -117,7 +118,7 @@ class _RequestAttendancePageState extends State<RequestAttendancePage> {
                   onChanged: (value) => setState(() => _selectedType = value!),
                 ),
                 const Text("Check In"),
-                const SizedBox(width: 20),
+                SizedBox(width: 20.w),
                 Radio<String>(
                   value: "CHECK-OUT",
                   groupValue: _selectedType,
@@ -126,19 +127,16 @@ class _RequestAttendancePageState extends State<RequestAttendancePage> {
                 const Text("Check Out"),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             const Text("Time", style: TextStyle(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 6),
+            SizedBox(height: 6.h),
             GestureDetector(
               onTap: () => _selectTime(context),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 15,
-                  vertical: 16,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 16.h),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey.shade300),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Row(
                   children: [
@@ -146,7 +144,7 @@ class _RequestAttendancePageState extends State<RequestAttendancePage> {
                       _selectedTime != null
                           ? _selectedTime!.format(context)
                           : "--:-- --",
-                      style: const TextStyle(fontSize: 16),
+                      style: TextStyle(fontSize: 16.sp),
                     ),
                     const Spacer(),
                     const Icon(Icons.access_time),
@@ -154,23 +152,23 @@ class _RequestAttendancePageState extends State<RequestAttendancePage> {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             const Text(
               "Comment",
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
-            const SizedBox(height: 6),
+            SizedBox(height: 6.h),
             TextField(
               controller: _commentController,
               maxLines: 3,
               decoration: InputDecoration(
                 hintText: "Describe the cause",
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             const Text("Date", style: TextStyle(fontWeight: FontWeight.w600)),
             const SizedBox(height: 6),
             GestureDetector(

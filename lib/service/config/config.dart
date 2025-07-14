@@ -1,6 +1,6 @@
 class Config {
-  static const String baseUrl = "https://215b35c569ea.ngrok-free.app";
-  // static const String baseUrl = "https://api.cosmotechintl.com/COSMO_HRIS";
+  static const String baseUrl = "https://443d8c827ad8.ngrok-free.app";
+  //static const String baseUrl = "https://api.cosmotechintl.com/COSMO_HRIS";
 
   // For login
   static const String _loginEndpoint = "api/v1/auth/authenticate";
@@ -41,8 +41,8 @@ class Config {
   static String get getAttendanceRequest => "$baseUrl/$_attendancerequest";
 
   // //for authenticate employee .. if employee is authenticated direct go to dashboard
-  static const String _authentication = "api/v1/auth/isAuthenticated";
-  static String get getAuthentication => "$baseUrl/$_authentication";
+  // static const String _authentication = "api/v1/auth/isAuthenticated";
+  // static String get getAuthentication => "$baseUrl/$_authentication";
 
   // add leave request
   static const String _addLeaveRequest = "api/v1/leave-request/create";
@@ -55,4 +55,17 @@ class Config {
   // add fatch leave policy
   static const String _retriveLeaveRequestdata = "api/v1/leave-request/get-own";
   static String get getLeaveRequestdata => "$baseUrl/$_retriveLeaveRequestdata";
+
+  // add fatch report recoed
+  static const String _retriveReportRecord =
+      "api/v1/attendance/getMonthlyRecord";
+  static String get getReportRecord => "$baseUrl/$_retriveReportRecord";
+
+  // forget password
+  static const String _forgetpasswordopt = "api/v1/auth/forget-password";
+  static String get getOtp => "$baseUrl/$_forgetpasswordopt";
+
+  // verify otp
+  static const String _veriryOpt = "api/v1/auth/forget-password";
+  static String get getVerifyOtp => "$baseUrl/$_veriryOpt";
 }

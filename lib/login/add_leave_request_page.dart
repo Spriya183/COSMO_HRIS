@@ -4,6 +4,7 @@ import 'package:attendance_system/common/date_time_converter.dart';
 import 'package:attendance_system/login/common/add_new_leave_request.dart';
 import 'package:attendance_system/model/attendance_model/retrive_leave_request_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class LeaveRequestPage extends StatefulWidget {
   const LeaveRequestPage({super.key});
@@ -14,30 +15,41 @@ class LeaveRequestPage extends StatefulWidget {
 
 class _LeaveRequestPageState extends State<LeaveRequestPage> {
   List<retriveLeaveRequestData> requestList = [];
-
-  Future<void> _handleFetchLeaveRequest() async {
-    final Record =
-        await RetriveLeaveRequestDataApiServices.fetchLeaveRequestRecords();
-
-    if (Record['status']) {
-      final response = Record['data'];
-      setState(() {
-        requestList = Record['data'];
-      });
-    } else {
-      setState(() {
-        requestList = [];
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(Record['message'] ?? 'Failed to load records')),
-      );
-    }
-  }
+  bool isLoading = true;
+  String errorMessage = '';
 
   @override
   void initState() {
     super.initState();
     _handleFetchLeaveRequest();
+  }
+
+  Future<void> _handleFetchLeaveRequest() async {
+    setState(() {
+      isLoading = true;
+      errorMessage = '';
+    });
+
+    final record =
+        await RetriveLeaveRequestDataApiServices.fetchLeaveRequestRecords();
+
+    print('API response: $record');
+
+    if (record['code'] == 200) {
+      setState(() {
+        requestList = record['data'];
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        requestList = [];
+        isLoading = false;
+        errorMessage = record['message'] ?? 'Failed to load records';
+      });
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(errorMessage)));
+    }
   }
 
   @override
@@ -52,151 +64,146 @@ class _LeaveRequestPageState extends State<LeaveRequestPage> {
       colors: const Color(0xff004E64),
       bodyColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(25),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // New Leave Request Button
-              Center(
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.shade200,
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
+        child:
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : errorMessage.isNotEmpty
+                ? Center(child: Text(errorMessage))
+                : SingleChildScrollView(
+                  padding: EdgeInsets.all(25.r),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'View and manage your leave requests',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Color(0xff004E64),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
+                      // Request Leave Button
+                      Center(
+                        child: Container(
+                          width: double.infinity,
+                          padding: EdgeInsets.all(24.r),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12.r),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.shade200,
+                                blurRadius: 10.r,
+                                offset: Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'View and manage your leave requests',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(0xff004E64),
+                                  fontSize: 18.sp,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              SizedBox(height: 16.sp),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder:
+                                          (context) =>
+                                              const NewLeaveRequestPage(),
+                                    ),
+                                  ).then((_) => _handleFetchLeaveRequest());
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: const Color(0xff004E64),
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20.w,
+                                    vertical: 14.h,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8.r),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Request Leave',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const NewLeaveRequestPage(),
+
+                      SizedBox(height: 50.h),
+
+                      Center(
+                        child: Text(
+                          'Leave Requests',
+                          style: TextStyle(
+                            color: Color(0xff004E64),
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+
+                      SizedBox(height: 10.h),
+
+                      requestList.isEmpty
+                          ? const Center(
+                            child: Text('No leave requests found.'),
+                          )
+                          : SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: DataTable(
+                              columns: const [
+                                DataColumn(label: Text('Leave Type')),
+                                DataColumn(label: Text('Start Date')),
+                                DataColumn(label: Text('End Date')),
+                                DataColumn(label: Text('Reason')),
+                                DataColumn(label: Text('Status')),
+                                DataColumn(label: Text('Requested On')),
+                              ],
+                              rows:
+                                  requestList.map((entry) {
+                                    return DataRow(
+                                      cells: [
+                                        DataCell(
+                                          Text(
+                                            entry.leavePolicy?.leaveType ?? '-',
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            formatDateOnly(
+                                              entry.startDate ?? '',
+                                            ),
+                                          ),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            formatDateOnly(entry.endDate ?? ''),
+                                          ),
+                                        ),
+                                        DataCell(Text(entry.reason ?? '-')),
+                                        DataCell(
+                                          Text(entry.status?.status ?? '-'),
+                                        ),
+                                        DataCell(
+                                          Text(
+                                            formatDateOnly(
+                                              entry.createdAt ?? '',
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    );
+                                  }).toList(),
                             ),
-                          ).then((_) => _handleFetchLeaveRequest());
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xff004E64),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 14,
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: const Text(
-                          'Request Leave',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
                     ],
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 50),
-
-              const Center(
-                child: Text(
-                  'Leave Requests',
-                  style: TextStyle(
-                    color: Color(0xff004E64),
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 10),
-
-              // Data Table
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: DataTable(
-                  columns: const [
-                    DataColumn(
-                      label: Text(
-                        'Leave Type',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        'Start Date',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        'End Date',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        'Reason',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        'Status',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                    DataColumn(
-                      label: Text(
-                        'Requested On',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ],
-                  rows:
-                      requestList.map((entry) {
-                        final dataMap = entry.toJson();
-                        return DataRow(
-                          cells: [
-                            DataCell(Text(dataMap['leavePolicy'] ?? '-')),
-                            DataCell(
-                              Text(formatDateOnly(dataMap['startDate'])),
-                            ),
-                            DataCell(
-                              Text(formatDateOnly(dataMap['endDate']) ?? '-'),
-                            ),
-                            DataCell(Text(dataMap['reason'] ?? '-')),
-                            DataCell(Text(dataMap['status'] ?? '')),
-                            DataCell(
-                              Text(formatDateOnly(dataMap['createdAt']) ?? '-'),
-                            ),
-                          ],
-                        );
-                      }).toList(),
-                ),
-              ),
-            ],
-          ),
-        ),
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ForgetPassword extends StatelessWidget {
-  const ForgetPassword({super.key});
+  const ForgetPassword({super.key, required String email});
 
   @override
   Widget build(BuildContext context) {
@@ -25,4 +25,8 @@ class ForgetPassword extends StatelessWidget {
       ],
     );
   }
+
+  static Future<ForgetPassword?> fromJson(Map<String, dynamic> data) async {}
+
+  Object? toJson() {}
 }

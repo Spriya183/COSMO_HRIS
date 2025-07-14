@@ -49,7 +49,7 @@ class LoginApiService {
       }
     } catch (e) {
       print("Login error: ${e.toString()}");
-      return {'message': 'An error occurred during logout.'};
+      return {'message': 'An error occurred during login.'};
     }
   }
 

@@ -3,7 +3,7 @@ import 'package:attendance_system/feature/attendance/attendance_request_page.dar
 import 'package:attendance_system/feature/common/attendance_page_container.dart';
 import 'package:attendance_system/feature/common/menubar_drawer.dart';
 import 'package:attendance_system/feature/common/attendance_table.dart';
-
+import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:flutter/material.dart';
 
 import 'package:attendance_system/api_services/checkin_api_services.dart';
@@ -32,12 +32,16 @@ class _HomepageState extends State<Attentancepage> {
   Future<void> _handleCheckIn() async {
     final result = await CheckinApiServices.checkinRecord();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(result['message']),
-        backgroundColor: result['status'] ? Colors.green : Colors.red,
-      ),
-    );
+    // Future.delayed(Duration(seconds: 2), () async {
+    ShowDialog(context: context).showSucessStateDialog(body: result['message']);
+    // });
+
+    // ScaffoldMessenger.of(context).showSnackBar(
+    //   SnackBar(
+    //     content: Text(result['message']),
+    //     backgroundColor: result['status'] ? Colors.green : Colors.red,
+    //   ),
+    // );
 
     //  Refresh the table after check-in
     tableKey.currentState?.loadRecords();
@@ -46,12 +50,11 @@ class _HomepageState extends State<Attentancepage> {
   Future<void> _handleCheckout() async {
     final result = await CheckoutApiServices.checkoutRecord();
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(result['message']),
-        backgroundColor: result['status'] ? Colors.green : Colors.red,
-      ),
-    );
+    Future.delayed(Duration(seconds: 2), () async {
+      ShowDialog(
+        context: context,
+      ).showSucessStateDialog(body: result['message']);
+    });
 
     //  Refresh the table after check-out
     tableKey.currentState?.loadRecords();

@@ -1,21 +1,11 @@
-class reportretrive {
-  String httpStatus;
-  String message;
-  int code;
-  List<reportretrive> data;
-  bool asyncRequest;
-  int? id;
-  String? status;
-  String? attendanceDate;
-  String? checkInTime;
-  String? checkOutTime;
+class ReportModel {
+  final int? id;
+  final String? status;
+  final String? attendanceDate;
+  final String? checkInTime;
+  final String? checkOutTime;
 
-  reportretrive({
-    required this.httpStatus,
-    required this.message,
-    required this.code,
-    required this.data,
-    required this.asyncRequest,
+  ReportModel({
     this.id,
     this.status,
     this.attendanceDate,
@@ -23,19 +13,8 @@ class reportretrive {
     this.checkOutTime,
   });
 
-  factory reportretrive.fromJson(Map<String, dynamic> json) {
-    return reportretrive(
-      httpStatus: json['httpStatus'] ?? '',
-      message: json['message'] ?? '',
-      code: json['code'] ?? 0,
-      data:
-          json['data'] != null
-              ? List<reportretrive>.from(
-                json['data'].map((item) => reportretrive.fromJson(item)),
-              )
-              : [],
-      asyncRequest: json['asyncRequest'] ?? false,
-
+  factory ReportModel.fromJson(Map<String, dynamic> json) {
+    return ReportModel(
       id: json['id'],
       status: json['status'],
       attendanceDate: json['attendanceDate'],

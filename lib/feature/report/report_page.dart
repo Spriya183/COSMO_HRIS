@@ -16,7 +16,7 @@ class AttendanceReportPage extends StatefulWidget {
 
 class _AttendanceReportPageState extends State<AttendanceReportPage> {
   DateTime _selectedDate = DateTime(2025, 6, 1);
-  List<reportretrive> requestList = [];
+  List<ReportModel> requestList = [];
   @override
   void initState() {
     super.initState();
@@ -24,15 +24,22 @@ class _AttendanceReportPageState extends State<AttendanceReportPage> {
   }
 
   Future<void> _handleReport() async {
-    final record = await ReportApiServices.fetchReportRecord();
-
-    print('API response: $record');
+    final record = await ReportApiServices.fetchReportRecord(
+      year: _selectedDate.year,
+      month: _selectedDate.month,
+    );
 
     if (record['code'] == 200) {
+      final List<ReportModel> data = record['data'];
       setState(() {
-        requestList = record['data'];
-        print('Fetched Report : ${requestList.length}');
+        requestList = data;
       });
+
+      if (data.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("No attendance data available.")),
+        );
+      }
     } else {
       setState(() {
         requestList = [];
@@ -55,6 +62,7 @@ class _AttendanceReportPageState extends State<AttendanceReportPage> {
       setState(() {
         _selectedDate = picked;
       });
+      _handleReport();
     }
   }
 
@@ -110,45 +118,64 @@ class _AttendanceReportPageState extends State<AttendanceReportPage> {
             SizedBox(height: 20.h),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: DataTable(
-                columns: const [
-                  DataColumn(
-                    label: Text('Date', style: TextStyle(color: Colors.grey)),
-                  ),
-                  DataColumn(
-                    label: Text('Status', style: TextStyle(color: Colors.grey)),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Check In',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                  DataColumn(
-                    label: Text(
-                      'Check Out',
-                      style: TextStyle(color: Colors.grey),
-                    ),
-                  ),
-                ],
-                rows:
-                    requestList.map((entry) {
-                      return DataRow(
-                        cells: [
-                          DataCell(
-                            Text(formatDateOnly(entry.attendanceDate ?? '-')),
+              child:
+                  requestList.isEmpty
+                      ? Center(
+                        child: Text("No data available for selected month."),
+                      )
+                      : DataTable(
+                        columns: const [
+                          DataColumn(
+                            label: Text(
+                              'Date',
+                              style: TextStyle(color: Colors.grey),
+                            ),
                           ),
-                          DataCell(Text(entry.status ?? '-')),
-                          DataCell(
-                            Text(formatFullTime(entry.checkInTime ?? '-')),
+                          DataColumn(
+                            label: Text(
+                              'Status',
+                              style: TextStyle(color: Colors.grey),
+                            ),
                           ),
-                          DataCell(
-                            Text(formatFullTime(entry.checkOutTime ?? '-')),
+                          DataColumn(
+                            label: Text(
+                              'Check In',
+                              style: TextStyle(color: Colors.grey),
+                            ),
+                          ),
+                          DataColumn(
+                            label: Text(
+                              'Check Out',
+                              style: TextStyle(color: Colors.grey),
+                            ),
                           ),
                         ],
-                      );
-                    }).toList(),
-              ),
+                        rows:
+                            requestList.map((entry) {
+                              return DataRow(
+                                cells: [
+                                  DataCell(
+                                    Text(
+                                      formatDateOnly(
+                                        entry.attendanceDate ?? '-',
+                                      ),
+                                    ),
+                                  ),
+                                  DataCell(Text(entry.status ?? '-')),
+                                  DataCell(
+                                    Text(
+                                      formatFullTime(entry.checkInTime ?? '-'),
+                                    ),
+                                  ),
+                                  DataCell(
+                                    Text(
+                                      formatFullTime(entry.checkOutTime ?? '-'),
+                                    ),
+                                  ),
+                                ],
+                              );
+                            }).toList(),
+                      ),
             ),
             SizedBox(height: 24.h),
             Container(

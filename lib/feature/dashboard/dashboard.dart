@@ -2,6 +2,7 @@ import 'package:attendance_system/api_services/employee_authentication_api_servi
 import 'package:attendance_system/api_services/employee_status_api_services.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
 import 'package:attendance_system/core/common/custom_date_time_converter.dart';
+import 'package:attendance_system/feature/common/buttom_nav_bar.dart';
 import 'package:attendance_system/feature/common/menubar_drawer.dart';
 
 import 'package:flutter/material.dart';
@@ -90,6 +91,7 @@ class _DashboardState extends State<Dashboard> {
       bodyColor: Colors.white,
       centerTitle: true,
       drawer: const MenubarDrawer(),
+
       leadingWidget: Builder(
         builder:
             (context) => IconButton(

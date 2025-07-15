@@ -8,6 +8,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ProfilePage extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
   final Function(bool) onDrawerChanged;
+
   const ProfilePage({
     super.key,
     required this.scaffoldKey,
@@ -90,8 +91,6 @@ class _ProfilePageState extends State<ProfilePage> {
       body:
           isLoading
               ? const Center(child: CircularProgressIndicator())
-              : errorMessage.isNotEmpty
-              ? Center(child: Text(errorMessage))
               : SingleChildScrollView(
                 child: Column(
                   children: [

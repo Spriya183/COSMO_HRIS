@@ -1,9 +1,11 @@
 import 'package:attendance_system/biomatric/biomatric.dart';
 import 'package:attendance_system/core/common/custom_button.dart';
+import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:attendance_system/core/common/custom_form_field.dart';
+import 'package:attendance_system/core/common/custom_single_child_scroll_view.dart';
 import 'package:attendance_system/core/common/custom_validation.dart';
 import 'package:attendance_system/feature/common/buttom_nav_bar.dart';
-import 'package:attendance_system/feature/forget_password/forget_password_ui.dart';
+import 'package:attendance_system/feature/forget_password/email_varification_screen.dart';
 import 'package:attendance_system/feature/quick_attendance/quick_attendance.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_system/api_services/login_api_service.dart';
@@ -69,19 +71,28 @@ class _LoginpageState extends State<Loginpage> {
         Navigator.pop(context);
 
         if (response['code'] == 200) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(response['message'])));
+          // Show success dialog
+          // ShowDialog(context: context).showSucessStateDialog(
+          //   body: response['message'],
+          //   onTab: () async {
+          // Navigator.pop(context);
 
-          await _askToEnableBiometric(email, password);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const BottomNavBar()),
-          );
+          Future.delayed(Duration(seconds: 2), () async {
+            await _askToEnableBiometric(email, password);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const BottomNavBar()),
+            );
+          });
+
+          //   },
+          // );
         } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(response['message'])));
+          //show error dialog
+
+          ShowDialog(
+            context: context,
+          ).showErrorStateDialog(body: response['message']);
         }
       } catch (e) {
         Navigator.pop(context); // close loading dialog if error
@@ -149,8 +160,7 @@ class _LoginpageState extends State<Loginpage> {
       backgroundColor: const Color(0xff004E64),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
+          AppSingleChildScrollView(
             child: SafeArea(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,

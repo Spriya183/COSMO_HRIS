@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:attendance_system/api_services/attendance_request_api_servive.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
+import 'package:attendance_system/core/common/custom_error_success_box.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -47,9 +48,9 @@ class _RequestAttendancePageState extends State<RequestAttendancePage> {
 
   Future<void> _handleAttendanceRequest() async {
     if (_selectedTime == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text("Please select a time.")));
+      ShowDialog(
+        context: context,
+      ).showErrorStateDialog(body: 'Please Enter Date and Time');
       return;
     }
 
@@ -73,20 +74,16 @@ class _RequestAttendancePageState extends State<RequestAttendancePage> {
 
       if (response['Code'] == 200) {
         final jsonResponse = response;
-        final String message =
-            jsonResponse['message'] ?? 'Request submitted successfully.';
-
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(message)));
+        Future.delayed(Duration(seconds: 2), () async {
+          ShowDialog(
+            context: context,
+          ).showSucessStateDialog(body: jsonResponse['message']);
+        });
       } else {
         final jsonResponse = response;
-        final String errorMessage =
-            jsonResponse['message'] ?? 'Something went wrong.';
-
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(errorMessage)));
+        ShowDialog(
+          context: context,
+        ).showErrorStateDialog(body: jsonResponse['message']);
       }
     } catch (e) {
       Navigator.pop(context);

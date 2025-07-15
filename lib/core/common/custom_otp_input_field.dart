@@ -99,28 +99,24 @@ class _CustomOtpInputFormFieldState extends State<CustomOtpInputFormField> {
         onChanged: widget.onChanged,
         focusedPinTheme: defaultPinTheme,
         submittedPinTheme: defaultPinTheme,
-        // validator: (value) {
-        //   return checkValidation(value.toString());
-        // },
-        // errorPinTheme: defaultPinTheme.copyBorderWith(
-        //   border: Border.all(color: Colors.redAccent),
-        // ),
-        // errorTextStyle: const TextStyle(fontSize: 12, color: AppColor.redColor),
-        // errorText:
-        //     "${getLocalizedString(context: context, resString: ResString.pinMustBe)} ${widget.numberOfFields} ${getLocalizedString(context: context, resString: ResString.digits)}",
+        validator: (value) {
+          return checkValidation(value.toString());
+        },
+        errorPinTheme: defaultPinTheme.copyBorderWith(
+          border: Border.all(color: Colors.redAccent),
+        ),
+        errorTextStyle: const TextStyle(fontSize: 12, color: AppColor.redColor),
+        errorText: "Pin must be 6 digit",
       ),
     );
   }
 
-  //   checkValidation(String value) {
-  //     if (value.isEmpty) {
-  //       return getLocalizedString(
-  //         context: context,
-  //         resString: ResString.enterPin,
-  //       );
-  //     }
-  //     if (value.length != widget.numberOfFields) {
-  //       return "${getLocalizedString(context: context, resString: ResString.pinMustBe)} ${widget.numberOfFields} ${getLocalizedString(context: context, resString: ResString.digits)}";
-  //     }
-  //   }
+  checkValidation(String value) {
+    if (value.isEmpty) {
+      return Text("Please enter a pin");
+    }
+    if (value.length != widget.numberOfFields) {
+      return "Pin must be 6 digit";
+    }
+  }
 }

@@ -2,6 +2,7 @@ import 'package:attendance_system/api_services/add_leave_request_api_service.dar
 import 'package:attendance_system/api_services/fatch_leave_policy_api_services.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
 import 'package:attendance_system/core/common/custom_dropdown.dart';
+import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:attendance_system/core/common/custom_form_field.dart';
 import 'package:attendance_system/model/response_model/leave_type_model.dart';
 import 'package:flutter/material.dart';
@@ -80,18 +81,22 @@ class _NewLeaveRequestPageState extends State<NewLeaveRequestPage> {
 
   Future<void> _handleLeaveRequest() async {
     if (startDate == null || endDate == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Please select both Start and End dates."),
-        ),
-      );
+      ShowDialog(
+        context: context,
+      ).showErrorStateDialog(body: 'Please Select both Start and End date');
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   const SnackBar(
+      //     content: Text("Please select both Start and End dates."),
+      //   ),
+      // );
       return;
     }
 
     if (_selectedLeaveType == null || _selectedLeaveType!.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please select a leave type.")),
-      );
+      ShowDialog(
+        context: context,
+      ).showErrorStateDialog(body: "Please select a leave type.");
+
       return;
     }
 
@@ -115,9 +120,12 @@ class _NewLeaveRequestPageState extends State<NewLeaveRequestPage> {
 
       Navigator.pop(context); // dismiss loader
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(response['message'] ?? 'summited successfully')),
-      );
+      ShowDialog(
+        context: context,
+      ).showErrorStateDialog(body: response['message']);
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(content: Text(response['message'] ?? 'summited successfully')),
+      // );
 
       if (response['status'] == true) {
         _reasonController.clear();

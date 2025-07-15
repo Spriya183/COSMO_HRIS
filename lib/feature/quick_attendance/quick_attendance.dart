@@ -1,5 +1,6 @@
 import 'package:attendance_system/core/common/custom_button.dart';
 import 'package:attendance_system/core/common/custom_dropdown.dart';
+import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:attendance_system/core/common/custom_form_field.dart';
 import 'package:attendance_system/core/common/custom_validation.dart';
 import 'package:attendance_system/feature/login/login_page.dart';
@@ -53,13 +54,15 @@ class _QuickAttendanceState extends State<QuickAttendance> {
         Navigator.pop(context);
 
         if (response['code'] == 200) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(response['message'])));
+          Future.delayed(Duration(seconds: 2), () {
+            ShowDialog(
+              context: context,
+            ).showSucessStateDialog(body: response['message']);
+          });
         } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(response['message'])));
+          ShowDialog(
+            context: context,
+          ).showErrorStateDialog(body: response['message']);
         }
       } catch (e) {
         Navigator.pop(context);
@@ -194,6 +197,7 @@ class _QuickAttendanceState extends State<QuickAttendance> {
                           SizedBox(height: 20.h),
                           CustomButton(
                             backgroundColor: Colors.white,
+                            borderColor: const Color(0xff004E64),
                             textColor: Color(0xff004E64),
                             text: 'Log In',
                             onPressed: () {

@@ -1,6 +1,9 @@
 // menubar_drawer
 
+import 'package:attendance_system/core/common/custom_error_success_box.dart';
+import 'package:attendance_system/core/common/custom_logout_dialogue_box.dart';
 import 'package:attendance_system/feature/common/buttom_nav_bar.dart';
+import 'package:attendance_system/feature/dashboard/dashboard.dart';
 import 'package:attendance_system/feature/leave_request/leave_request_page.dart';
 import 'package:attendance_system/feature/login/login_page.dart';
 import 'package:attendance_system/feature/report/report_page.dart';
@@ -25,21 +28,29 @@ class MenubarDrawer extends StatelessWidget {
 
       if (result['code'] == 200) {
         // Show success message
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(result['message'])));
+        Future.delayed(Duration(seconds: 2), () async {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const Loginpage()),
+            (route) => false,
+          );
+        });
 
-        // Navigate to login page and clear previous routes
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const Loginpage()),
-          (route) => false,
-        );
+        // ShowDialog(
+        //   context: context,
+        // ).showSucessStateDialog(body: result['message']);
+
+        // // Navigate to login page and clear previous routes
+        // Navigator.pushAndRemoveUntil(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const Loginpage()),
+        //   (route) => false,
+        // );
       } else {
         // Show failure message
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(result['message'])));
+        ShowDialog(
+          context: context,
+        ).showSucessStateDialog(body: result['message']);
       }
     } catch (e) {
       Navigator.pop(context); // Ensure dialog is dismissed on error
@@ -72,7 +83,15 @@ class MenubarDrawer extends StatelessWidget {
             onTap: () {
               Navigator.pushReplacement(
                 context,
-                MaterialPageRoute(builder: (context) => const BottomNavBar()),
+                MaterialPageRoute(
+                  builder:
+                      (context) => Dashboard(
+                        scaffoldKey: GlobalKey<ScaffoldState>(),
+                        onDrawerChanged: (bool isOpen) {
+                          //logic
+                        },
+                      ),
+                ),
               );
             },
           ),
@@ -114,7 +133,11 @@ class MenubarDrawer extends StatelessWidget {
             leading: const Icon(Icons.logout, color: Color(0xff004E64)),
             title: const Text('Logout'),
             onTap: () async {
-              await _handleLogout(context);
+              final shouldLogout = await showLogoutDialog(context);
+
+              if (shouldLogout == true) {
+                await _handleLogout(context);
+              }
             },
           ),
         ],

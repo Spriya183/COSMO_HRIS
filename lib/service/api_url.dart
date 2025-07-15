@@ -1,5 +1,5 @@
 class Config {
-  static const String baseUrl = "https://0588d54b0dd6.ngrok-free.app";
+  static const String baseUrl = "https://5712a97b5f16.ngrok-free.app";
   //static const String baseUrl = "https://api.cosmotechintl.com/COSMO_HRIS";
 
   // For login
@@ -66,6 +66,6 @@ class Config {
   static String get getOtp => "$baseUrl/$_forgetpasswordopt";
 
   // verify otp
-  static const String _veriryOpt = "api/v1/auth/forget-password";
+  static const String _veriryOpt = "api/v1/auth/verify-otp";
   static String get getVerifyOtp => "$baseUrl/$_veriryOpt";
 }

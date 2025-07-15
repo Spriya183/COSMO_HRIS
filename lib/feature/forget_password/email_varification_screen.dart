@@ -1,18 +1,25 @@
 import 'package:attendance_system/api_services/forget_password_api_services.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
 import 'package:attendance_system/core/common/custom_button.dart';
+import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:attendance_system/core/common/custom_form_field.dart';
 import 'package:attendance_system/core/common/custom_validation.dart';
-import 'package:attendance_system/feature/forget_password/verification_page.dart';
+import 'package:attendance_system/feature/forget_password/otp_verification_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class ForgotPasswordPage extends StatelessWidget {
-  final TextEditingController emailController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+class ForgotPasswordPage extends StatefulWidget {
   ForgotPasswordPage({super.key});
+
+  @override
+  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
+}
+
+class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
+  final TextEditingController emailController = TextEditingController();
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   Future<void> handleOtp(BuildContext context) async {
     final email = emailController.text.trim();
@@ -24,25 +31,25 @@ class ForgotPasswordPage extends StatelessWidget {
     );
 
     try {
-      final response = await ForgetPasswordApiServices.forgetPassword(email);
+      final response = await EmailVerificationApiServices.emailVerification(
+        email,
+      );
 
       Navigator.pop(context);
 
       if (response['code'] == 200) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(response['message'])));
-
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VerificationPage(email: email),
-          ),
-        );
+        Future.delayed(Duration(seconds: 2), () async {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OtpVerificationPage(email: email),
+            ),
+          );
+        });
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(response['message'])));
+        ShowDialog(
+          context: context,
+        ).showSucessStateDialog(body: (response['message']));
       }
     } catch (e) {
       Navigator.pop(context);
@@ -123,9 +130,19 @@ class ForgotPasswordPage extends StatelessWidget {
                   CustomButton(
                     text: 'Send OTP',
                     prefixIcon: const Icon(Icons.send, color: Colors.white),
+
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         handleOtp(context);
+                        // final email = emailController.text.trim();
+
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder:
+                        //         (context) => VerificationPage(email: email),
+                        //   ),
+                        // );
                       }
                     },
                   ),

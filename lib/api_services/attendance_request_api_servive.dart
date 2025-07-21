@@ -65,9 +65,9 @@ class AttendanceRequestApiService {
       final message = responseBody['message'];
 
       if (code == 201) {
-        return {'status': true, 'message': message};
+        return {'code': code, 'message': message};
       } else {
-        return {'status': false, 'message': message};
+        return {'code': code, 'message': message};
       }
     } catch (e) {
       print('Attendance request error: $e');

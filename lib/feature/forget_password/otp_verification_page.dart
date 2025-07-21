@@ -1,11 +1,12 @@
+import 'package:attendance_system/api_services/resend_otp_api_services.dart';
 import 'package:attendance_system/api_services/verify_otp_api_services.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
 import 'package:attendance_system/core/common/custom_button.dart';
+import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:attendance_system/core/common/custom_otp_input_field.dart';
-import 'package:attendance_system/feature/login/login_page.dart';
+import 'package:attendance_system/feature/forget_password/password_set_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:pinput/pinput.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   final String email;
@@ -17,6 +18,58 @@ class OtpVerificationPage extends StatefulWidget {
 
 class _OtpVerificationPageState extends State<OtpVerificationPage> {
   final TextEditingController otpController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+
+  Future<void> ResetOtp(BuildContext context) async {
+    final email = emailController.text.trim();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      final response = await ResendOtpApiServices.ResendOtp(widget.email);
+
+      Navigator.pop(context);
+      if (response['status'] == true) {
+        // ShowDialog(context: context).showSucessStateDialog(
+        //   body: response['message'],
+
+        //   onTab: () {
+        //     Navigator.push(
+        //       context,
+        //       MaterialPageRoute(
+        //         builder: (context) => OtpVerificationPage(email: widget.email),
+        //       ),
+        //     );
+        //   },
+        // );
+
+        ShowDialog(context: context).showSucessStateDialog(
+          body: response['message'],
+          onTab: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OtpVerificationPage(email: widget.email),
+              ),
+            );
+          },
+        );
+      } else {
+        ShowDialog(context: context).showErrorStateDialog(
+          body: response['message'] ?? "Something went wrong",
+        );
+      }
+    } catch (e) {
+      Navigator.pop(context);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
+    }
+  }
 
   Future<void> handleVerifiedPassword(BuildContext context) async {
     final otp = otpController.text.trim();
@@ -43,19 +96,47 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
       Navigator.pop(context);
 
       if (response['status'] == true) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(response['message'])));
+        ShowDialog(context: context).showSucessStateDialog(
+          body: response['message'],
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const Loginpage()),
+          onTab: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => SetPasswordPage(
+                      email: widget.email,
+                      otp: int.parse(otpController.text.trim()),
+                    ),
+              ),
+            );
+          },
         );
       } else {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(response['message'])));
+        ShowDialog(
+          context: context,
+        ).showErrorStateDialog(body: (response['message']));
       }
+
+      // ScaffoldMessenger.of(
+      //   context,
+      // ).showSnackBar(SnackBar(content: Text(response['message'])));
+
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder:
+      //         (context) => SetPasswordPage(
+      //           email: widget.email,
+      //           otp: int.parse(otpController.text.trim()),
+      //         ),
+      //   ),
+      // );
+      // } else {
+      //   ScaffoldMessenger.of(
+      //     context,
+      //   ).showSnackBar(SnackBar(content: Text(response['message'])));
+      // }
     } catch (e) {
       Navigator.pop(context);
       ScaffoldMessenger.of(
@@ -71,7 +152,10 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
         'Reset Password',
         style: TextStyle(color: Colors.white),
       ),
-      showBackButton: true,
+      leadingWidget: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
       centerTitle: true,
       colors: const Color(0xff004E64),
       bodyColor: Colors.white,
@@ -140,7 +224,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                   SizedBox(width: 5.w),
                   TextButton(
                     onPressed: () {
-                      // Resend OTP API call
+                      ResetOtp(context);
                     },
                     child: Text(
                       "Resend OTP",

@@ -2,7 +2,6 @@ import 'package:attendance_system/biomatric/biomatric.dart';
 import 'package:attendance_system/core/common/custom_button.dart';
 import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:attendance_system/core/common/custom_form_field.dart';
-import 'package:attendance_system/core/common/custom_single_child_scroll_view.dart';
 import 'package:attendance_system/core/common/custom_validation.dart';
 import 'package:attendance_system/feature/common/buttom_nav_bar.dart';
 import 'package:attendance_system/feature/forget_password/email_varification_screen.dart';
@@ -25,20 +24,35 @@ class _LoginpageState extends State<Loginpage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   bool alreadyEnabled = false;
+  bool _rememberMe = false;
 
   @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
     checkBiometricStatus();
   }
+
+  // @override
+  // void dispose() {
+  //   emailController.dispose();
+  //   passwordController.dispose();
+  //   super.dispose();
+  // }
 
   Future<void> checkBiometricStatus() async {
     final storage = FlutterSecureStorage();
     final isEnabled = await storage.read(key: 'biometric_enabled');
+    final rememberMe = await storage.read(key: 'remember_me');
+    final savedEmail = await storage.read(key: 'remembered_email');
+    final savedPassword = await storage.read(key: 'remembered_password');
+
     setState(() {
       alreadyEnabled = isEnabled == 'true';
+      _rememberMe = rememberMe == 'true';
+      if (_rememberMe) {
+        emailController.text = savedEmail ?? '';
+        passwordController.text = savedPassword ?? '';
+      }
     });
   }
 
@@ -54,7 +68,17 @@ class _LoginpageState extends State<Loginpage> {
     if (_formKey.currentState!.validate()) {
       final email = emailController.text.trim();
       final password = passwordController.text.trim();
-      // _askToEnableBiometric(emailController.text, passwordController.text);
+      final storage = FlutterSecureStorage();
+
+      if (_rememberMe) {
+        await storage.write(key: 'remember_me', value: 'true');
+        await storage.write(key: 'remembered_email', value: email);
+        await storage.write(key: 'remembered_password', value: password);
+      } else {
+        await storage.delete(key: 'remember_me');
+        await storage.delete(key: 'remembered_email');
+        await storage.delete(key: 'remembered_password');
+      }
 
       showDialog(
         context: context,
@@ -71,31 +95,20 @@ class _LoginpageState extends State<Loginpage> {
         Navigator.pop(context);
 
         if (response['code'] == 200) {
-          // Show success dialog
-          // ShowDialog(context: context).showSucessStateDialog(
-          //   body: response['message'],
-          //   onTab: () async {
-          // Navigator.pop(context);
-
-          Future.delayed(Duration(seconds: 2), () async {
+          Future.delayed(Duration(microseconds: 100), () async {
             await _askToEnableBiometric(email, password);
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const BottomNavBar()),
+              MaterialPageRoute(builder: (context) => BottomNavBar()),
             );
           });
-
-          //   },
-          // );
         } else {
-          //show error dialog
-
           ShowDialog(
             context: context,
           ).showErrorStateDialog(body: response['message']);
         }
       } catch (e) {
-        Navigator.pop(context); // close loading dialog if error
+        Navigator.pop(context);
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
@@ -103,7 +116,6 @@ class _LoginpageState extends State<Loginpage> {
     }
   }
 
-  //biomatric
   Future<void> _askToEnableBiometric(String username, String password) async {
     final _secureStorage = const FlutterSecureStorage();
 
@@ -146,10 +158,6 @@ class _LoginpageState extends State<Loginpage> {
         await _secureStorage.write(key: 'biometric_enabled', value: 'true');
         await _secureStorage.write(key: 'username', value: username);
         await _secureStorage.write(key: 'password', value: password);
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Biometric login enabled")),
-        );
       }
     }
   }
@@ -160,13 +168,13 @@ class _LoginpageState extends State<Loginpage> {
       backgroundColor: const Color(0xff004E64),
       body: Stack(
         children: [
-          AppSingleChildScrollView(
+          SingleChildScrollView(
+            scrollDirection: Axis.vertical,
             child: SafeArea(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   SizedBox(height: 110.h),
-
                   Container(
                     width: 100.w,
                     height: 100.h,
@@ -190,9 +198,7 @@ class _LoginpageState extends State<Loginpage> {
                       ),
                     ),
                   ),
-
                   SizedBox(height: 15.h),
-
                   Text(
                     'COSMO HRIS',
                     style: TextStyle(
@@ -201,12 +207,10 @@ class _LoginpageState extends State<Loginpage> {
                       color: Colors.white,
                     ),
                   ),
-
                   SizedBox(height: 55.h),
-
                   Container(
                     width: double.infinity,
-                    height: 480.h,
+                    height: 520.h,
                     padding: EdgeInsets.symmetric(
                       horizontal: 25.w,
                       vertical: 20.h,
@@ -218,11 +222,8 @@ class _LoginpageState extends State<Loginpage> {
                         topRight: Radius.circular(40.r),
                       ),
                     ),
-
-                    //form
                     child: Form(
                       key: _formKey,
-
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -252,10 +253,31 @@ class _LoginpageState extends State<Loginpage> {
                             prefixIcon: const Icon(Icons.lock),
                           ),
                           SizedBox(height: 10.h),
-
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Checkbox(
+                                    value: _rememberMe,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _rememberMe = value ?? false;
+                                      });
+                                    },
+
+                                    activeColor: const Color(0xff004E64),
+                                  ),
+                                  const Text(
+                                    "Remember Me",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                ],
+                              ),
                               TextButton(
                                 onPressed: () {
                                   Navigator.push(
@@ -278,25 +300,40 @@ class _LoginpageState extends State<Loginpage> {
                               ),
                             ],
                           ),
-
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              CustomButton(
-                                width: 270.w,
-                                text: 'LOG IN',
-                                onPressed: () async {
-                                  if (_formKey.currentState!.validate()) {
-                                    handleLogin();
-                                  }
-                                },
-                              ),
-
-                              BiometricLoginScreen(onLogin: biometricAutoLogin),
-                            ],
+                          // Row(
+                          //   mainAxisAlignment: MainAxisAlignment.end,
+                          //   children: [
+                          //     TextButton(
+                          //       onPressed: () {
+                          //         Navigator.push(
+                          //           context,
+                          //           MaterialPageRoute(
+                          //             builder:
+                          //                 (context) => ForgotPasswordPage(),
+                          //           ),
+                          //         );
+                          //       },
+                          //       child: const Text(
+                          //         "Forgot Password?",
+                          //         style: TextStyle(
+                          //           color: Color(0xff666666A8),
+                          //           fontSize: 16,
+                          //           fontFamily: 'roboto',
+                          //           fontWeight: FontWeight.w500,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ],
+                          // ),
+                          CustomButton(
+                            text: 'LOG IN',
+                            onPressed: () async {
+                              if (_formKey.currentState!.validate()) {
+                                handleLogin();
+                              }
+                            },
                           ),
                           SizedBox(height: 15.h),
-
                           CustomButton(
                             backgroundColor: Colors.white,
                             borderColor: const Color(0xff004E64),
@@ -311,6 +348,8 @@ class _LoginpageState extends State<Loginpage> {
                               );
                             },
                           ),
+                          SizedBox(height: 15.h),
+                          BiometricLoginScreen(onLogin: biometricAutoLogin),
                         ],
                       ),
                     ),

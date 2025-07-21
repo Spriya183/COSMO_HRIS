@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:attendance_system/api_services/attendance_request_api_servive.dart';
+import 'package:attendance_system/constant/custom_app_padding.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
 import 'package:attendance_system/core/common/custom_error_success_box.dart';
 
@@ -72,18 +73,19 @@ class _RequestAttendancePageState extends State<RequestAttendancePage> {
 
       Navigator.pop(context); // close loading dialog
 
-      if (response['Code'] == 200) {
-        final jsonResponse = response;
-        Future.delayed(Duration(seconds: 2), () async {
-          ShowDialog(
-            context: context,
-          ).showSucessStateDialog(body: jsonResponse['message']);
-        });
-      } else {
-        final jsonResponse = response;
+      if (response['code'] == 201) {
+        // Future.delayed(Duration(seconds: 2), () async {
         ShowDialog(
           context: context,
-        ).showErrorStateDialog(body: jsonResponse['message']);
+        ).showSucessStateDialog(body: response['message']);
+        // ShowDialog(
+        //   context: context,
+        // ).showSucessStateDialog(title: 'Sucess', body: response['message']);
+        // });
+      } else {
+        ShowDialog(
+          context: context,
+        ).showErrorStateDialog(body: response['message']);
       }
     } catch (e) {
       Navigator.pop(context);
@@ -108,7 +110,7 @@ class _RequestAttendancePageState extends State<RequestAttendancePage> {
       centerTitle: true,
       colors: const Color(0xff004E64),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.r),
+        padding: AppPadding.basePagePadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

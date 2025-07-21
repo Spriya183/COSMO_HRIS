@@ -1,7 +1,8 @@
+import 'package:attendance_system/constant/custom_app_padding.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class attendancePageContainer extends StatelessWidget {
+class AttendancePageContainer extends StatelessWidget {
   final String title;
   final Color titlecolor;
   final Color borderColor;
@@ -10,7 +11,7 @@ class attendancePageContainer extends StatelessWidget {
   final VoidCallback onPressed;
   final Color buttonTextColor;
 
-  const attendancePageContainer({
+  const AttendancePageContainer({
     super.key,
     required this.title,
     required this.titlecolor,
@@ -25,7 +26,7 @@ class attendancePageContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.only(bottom: 20.h),
-      padding: EdgeInsets.all(16.r),
+      padding: AppPadding.cardPadding,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border.all(color: borderColor, width: 0.5),
@@ -65,9 +66,19 @@ class attendancePageContainer extends StatelessWidget {
                 ),
               ),
               onPressed: onPressed,
-              child: Text(
-                title,
-                style: TextStyle(fontSize: 16, color: buttonTextColor),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon, color: buttonTextColor),
+                    SizedBox(width: 5.w),
+                  ],
+                  Text(
+                    title,
+                    style: TextStyle(fontSize: 16.sp, color: buttonTextColor),
+                  ),
+                ],
               ),
             ),
           ),

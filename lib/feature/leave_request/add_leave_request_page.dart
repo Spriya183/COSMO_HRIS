@@ -1,9 +1,13 @@
 import 'package:attendance_system/api_services/add_leave_request_api_service.dart';
 import 'package:attendance_system/api_services/fatch_leave_policy_api_services.dart';
+import 'package:attendance_system/constant/app_color.dart';
+import 'package:attendance_system/constant/color_extention.dart';
+import 'package:attendance_system/constant/custom_app_padding.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
 import 'package:attendance_system/core/common/custom_dropdown.dart';
 import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:attendance_system/core/common/custom_form_field.dart';
+import 'package:attendance_system/core/typography/font_style_extentions.dart';
 import 'package:attendance_system/model/response_model/leave_type_model.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -29,7 +33,7 @@ class _NewLeaveRequestPageState extends State<NewLeaveRequestPage> {
   }
 
   Future<void> _loadLeaveTypes() async {
-    final result = await FatchLeavePolicyApiServices.fetchLeavePolicy();
+    final result = await fetchLeavePolicyApiServices.fetchLeavePolicy();
 
     if (result['status'] == true && result['data'] != null) {
       final List<LeavePolicy> leavePolicies = List<LeavePolicy>.from(
@@ -122,7 +126,7 @@ class _NewLeaveRequestPageState extends State<NewLeaveRequestPage> {
 
       ShowDialog(
         context: context,
-      ).showErrorStateDialog(body: response['message']);
+      ).showSucessStateDialog(body: response['message']);
       // ScaffoldMessenger.of(context).showSnackBar(
       //   SnackBar(content: Text(response['message'] ?? 'summited successfully')),
       // );
@@ -164,7 +168,7 @@ class _NewLeaveRequestPageState extends State<NewLeaveRequestPage> {
       colors: const Color(0xff004E64),
       bodyColor: Colors.white,
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: AppPadding.basePagePadding,
         child: Form(
           key: _formKey,
           child: Column(
@@ -230,11 +234,21 @@ class _NewLeaveRequestPageState extends State<NewLeaveRequestPage> {
               const SizedBox(height: 20),
 
               // Reason Field
+              Text(
+                'Reason',
+                style:
+                    context
+                        .textStyle(palette: ColorPalette.sherpa_blue)
+                        .medium
+                        .bold,
+              ),
               CustomTextfield(
-                label: "Reason",
+                // label: "Reason",
                 hint: "Describe the reason for your leave",
                 controller: _reasonController,
                 maxLines: 4,
+                customPadding: const EdgeInsets.all(12),
+                customTextAlignVertical: TextAlignVertical.top,
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
                     return "Reason is required";

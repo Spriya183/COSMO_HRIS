@@ -5,7 +5,6 @@ import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:attendance_system/core/common/custom_form_field.dart';
 import 'package:attendance_system/core/common/custom_validation.dart';
 import 'package:attendance_system/feature/forget_password/otp_verification_page.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -36,20 +35,23 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       );
 
       Navigator.pop(context);
+      if (response['status'] == true) {
+        ShowDialog(context: context).showSucessStateDialog(
+          body: response['message'],
 
-      if (response['code'] == 200) {
-        Future.delayed(Duration(seconds: 2), () async {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => OtpVerificationPage(email: email),
-            ),
-          );
-        });
+          onTab: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => OtpVerificationPage(email: email),
+              ),
+            );
+          },
+        );
       } else {
         ShowDialog(
           context: context,
-        ).showSucessStateDialog(body: (response['message']));
+        ).showErrorStateDialog(body: (response['message']));
       }
     } catch (e) {
       Navigator.pop(context);
@@ -66,7 +68,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         'Forget Password',
         style: TextStyle(color: Colors.white),
       ),
-      showBackButton: true,
+      leadingWidget: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => Navigator.of(context).pop(),
+      ),
       centerTitle: true,
       colors: const Color(0xff004E64),
       bodyColor: Colors.white,
@@ -105,14 +110,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               style: TextStyle(
                 fontSize: 22.sp,
                 fontWeight: FontWeight.w600,
-                color: Colors.black,
+                color: Color(0xff004E64),
               ),
             ),
             SizedBox(height: 8.h),
             Text(
               'Enter your email to receive a password reset OTP',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14.sp, color: Colors.black),
+              style: TextStyle(fontSize: 14.sp, color: Color(0xff004E64)),
             ),
             SizedBox(height: 30.h),
             Form(
@@ -134,15 +139,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
                         handleOtp(context);
-                        // final email = emailController.text.trim();
-
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder:
-                        //         (context) => VerificationPage(email: email),
-                        //   ),
-                        // );
                       }
                     },
                   ),

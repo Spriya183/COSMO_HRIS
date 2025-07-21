@@ -1,4 +1,4 @@
-import 'package:attendance_system/api_services/set_new_password_api_services.dart';
+import 'package:attendance_system/api_services/change_password_api_service.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
 import 'package:attendance_system/core/common/custom_button.dart';
 import 'package:attendance_system/core/common/custom_error_success_box.dart';
@@ -8,18 +8,25 @@ import 'package:attendance_system/feature/login/login_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-class SetPasswordPage extends StatelessWidget {
-  final String email;
-  final int otp;
+class ChangePasswordPage extends StatefulWidget {
+  const ChangePasswordPage({super.key});
 
-  SetPasswordPage({Key? key, required this.email, required this.otp})
-    : super(key: key);
+  @override
+  State<ChangePasswordPage> createState() => _ChangePasswordPageState();
+}
 
+class _ChangePasswordPageState extends State<ChangePasswordPage> {
+  final TextEditingController currentPasswordController =
+      TextEditingController();
   final TextEditingController newPasswordController = TextEditingController();
   final TextEditingController confirmPasswordController =
       TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
-  Future<void> handleSetPassword(BuildContext context) async {
+  Future<void> handleChangePassword(BuildContext context) async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final currentPassword = currentPasswordController.text.trim();
     final newPassword = newPasswordController.text.trim();
     final confirmPassword = confirmPasswordController.text.trim();
 
@@ -37,9 +44,8 @@ class SetPasswordPage extends StatelessWidget {
     );
 
     try {
-      final response = await SetNewPasswordApiServices.SetNewPassword(
-        email,
-        otp,
+      final response = await ChangePasswordApiService.changePassword(
+        currentPassword,
         newPassword,
         confirmPassword,
       );
@@ -49,22 +55,13 @@ class SetPasswordPage extends StatelessWidget {
       if (response['status'] == true) {
         ShowDialog(context: context).showSucessStateDialog(
           body: response['message'],
-
           onTab: () {
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => Loginpage()),
             );
           },
         );
-
-        // ShowDialog(
-        //   context: context,
-        // ).showSucessStateDialog(body: response['message']);
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const Loginpage()),
-        // );
       } else {
         ShowDialog(
           context: context,
@@ -82,60 +79,71 @@ class SetPasswordPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BasePage(
       title: const Text(
-        'Set Your Password',
+        'Change Password',
         style: TextStyle(color: Colors.white),
       ),
       centerTitle: true,
+      colors: const Color(0xff004E64),
+      bodyColor: Colors.white,
       leadingWidget: IconButton(
         icon: const Icon(Icons.arrow_back, color: Colors.white),
         onPressed: () => Navigator.of(context).pop(),
       ),
-      colors: const Color(0xff004E64),
-      bodyColor: Colors.white,
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20.r),
+        child: Form(
+          key: _formKey,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
             children: [
-              ClipOval(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 100.w,
-                  height: 100.h,
-                  fit: BoxFit.cover,
+              Center(
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: 100.w,
+                    height: 100.h,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 12),
-              const Text(
-                'Set Your Password',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 20),
 
+              /// Current Password
               CustomTextfield(
-                controller: newPasswordController,
-                hint: 'Enter Your New Password',
-                label: 'New Password',
+                controller: currentPasswordController,
+                hint: 'Enter Current Password',
+                label: 'Current Password',
                 isPassword: true,
                 validator: Validation.passwordValidation,
                 prefixIcon: const Icon(Icons.lock),
               ),
               const SizedBox(height: 15),
 
+              /// New Password
+              CustomTextfield(
+                controller: newPasswordController,
+                hint: 'Enter New Password',
+                label: 'New Password',
+                isPassword: true,
+                validator: Validation.passwordValidation,
+                prefixIcon: const Icon(Icons.lock_outline),
+              ),
+              const SizedBox(height: 15),
+
+              /// Confirm Password
               CustomTextfield(
                 controller: confirmPasswordController,
-                hint: 'Confirm Your Password',
+                hint: 'Confirm New Password',
                 label: 'Confirm Password',
                 isPassword: true,
                 validator: Validation.passwordValidation,
-                prefixIcon: const Icon(Icons.lock),
+                prefixIcon: const Icon(Icons.lock_outline),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 25),
 
+              /// Submit Button
               CustomButton(
-                text: 'Set Password',
-                onPressed: () => handleSetPassword(context),
+                text: "Change Password",
+                onPressed: () => handleChangePassword(context),
               ),
             ],
           ),

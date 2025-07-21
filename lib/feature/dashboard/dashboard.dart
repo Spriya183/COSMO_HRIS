@@ -1,12 +1,19 @@
+import 'dart:ui';
+
 import 'package:attendance_system/api_services/employee_authentication_api_services.dart';
 import 'package:attendance_system/api_services/employee_status_api_services.dart';
+import 'package:attendance_system/constant/app_color.dart';
+import 'package:attendance_system/constant/app_font_size.dart';
+import 'package:attendance_system/constant/color_extention.dart';
+import 'package:attendance_system/constant/custom_app_padding.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
 import 'package:attendance_system/core/common/custom_date_time_converter.dart';
-import 'package:attendance_system/feature/common/buttom_nav_bar.dart';
+import 'package:attendance_system/core/typography/font_style_extentions.dart';
 import 'package:attendance_system/feature/common/menubar_drawer.dart';
+import 'package:attendance_system/feature/leave_request/leave_request_table_page.dart';
+import 'package:attendance_system/service/api_url.dart';
 
 import 'package:flutter/material.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class Dashboard extends StatefulWidget {
@@ -32,6 +39,7 @@ class _DashboardState extends State<Dashboard> {
   String? status;
   String? checkInTime;
   String? checkOutTime;
+  String? imageUrl;
 
   bool isLoading = true;
   String errorMessage = '';
@@ -39,8 +47,13 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    fetchEmployee();
-    fetchStatus();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    setState(() => isLoading = true);
+    await Future.wait([fetchEmployee(), fetchStatus()]);
+    setState(() => isLoading = false);
   }
 
   Future<void> fetchEmployee() async {
@@ -54,12 +67,12 @@ class _DashboardState extends State<Dashboard> {
         position = authResponse.data!.position;
         employeeId = authResponse.data!.id;
         email = authResponse.data!.email;
-        isLoading = false;
+        imageUrl = authResponse.data!.imageUrl ?? '';
+        errorMessage = '';
       });
     } else {
       setState(() {
         errorMessage = 'Failed to fetch employee data';
-        isLoading = false;
       });
     }
   }
@@ -72,13 +85,55 @@ class _DashboardState extends State<Dashboard> {
         status = statusResponse.Data!.status;
         checkInTime = statusResponse.Data!.checkInTime;
         checkOutTime = statusResponse.Data!.checkOutTime;
-        isLoading = false;
+        errorMessage = '';
       });
     } else {
       setState(() {
-        fetchEmployee();
+        errorMessage = 'Failed to fetch employee status';
       });
     }
+  }
+
+  //greeting
+  String getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) return 'Good Morning,';
+    if (hour < 17) return 'Good Afternoon,';
+    return 'Good Evening,';
+  }
+
+  String formatDate(DateTime date) {
+    return "${date.day.toString().padLeft(2, '0')} "
+        "${_monthName(date.month)} "
+        "${date.year}";
+  }
+
+  String _monthName(int month) {
+    const months = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    return months[month - 1];
+  }
+
+  // Helper widget function for fallback image
+  Widget _buildFallbackImage() {
+    return Container(
+      height: 100.h,
+      width: 100.h,
+      color: Colors.grey[300],
+      child: const Icon(Icons.person, size: 60, color: Colors.grey),
+    );
   }
 
   @override
@@ -91,7 +146,6 @@ class _DashboardState extends State<Dashboard> {
       bodyColor: Colors.white,
       centerTitle: true,
       drawer: const MenubarDrawer(),
-
       leadingWidget: Builder(
         builder:
             (context) => IconButton(
@@ -104,19 +158,120 @@ class _DashboardState extends State<Dashboard> {
               ? const Center(child: CircularProgressIndicator())
               : errorMessage.isNotEmpty
               ? Center(child: Text(errorMessage))
-              : Padding(
-                padding: EdgeInsets.all(25.r),
+              : RefreshIndicator(
+                onRefresh: _loadData,
                 child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: AppPadding.basePagePadding,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Welcome back, ${fullName ?? 'User'}',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
+                      Card(
+                        color: Colors.white,
+                        elevation: 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              Column(
+                                children: [
+                                  ClipOval(
+                                    child:
+                                        (imageUrl != null &&
+                                                imageUrl!.isNotEmpty)
+                                            ? Image.network(
+                                              '${Config.baseUrl}${imageUrl!.startsWith('/') ? '' : '/'}$imageUrl',
+                                              height: 67.h,
+                                              width: 67.h,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (
+                                                context,
+                                                error,
+                                                stackTrace,
+                                              ) {
+                                                // Show fallback container with icon if image load fails
+                                                return _buildFallbackImage();
+                                              },
+                                            )
+                                            : _buildFallbackImage(),
+                                  ),
+                                  SizedBox(height: 10),
+                                  Text(
+                                    " ${formatDate(DateTime.now())}",
+                                    style:
+                                        context
+                                            .textStyle(
+                                              palette: ColorPalette.zinc,
+                                            )
+                                            .small,
+                                  ),
+                                ],
+                              ),
+
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      getGreeting(),
+                                      style:
+                                          context
+                                              .textStyle(
+                                                palette:
+                                                    ColorPalette.sherpa_blue,
+                                              )
+                                              .header5
+                                              .bold,
+                                    ),
+
+                                    Text(
+                                      fullName ?? '',
+                                      style:
+                                          context
+                                              .textStyle(
+                                                palette: ColorPalette.zinc,
+                                              )
+                                              .medium,
+                                    ),
+                                    Text(
+                                      position ?? '',
+                                      style:
+                                          context
+                                              .textStyle(
+                                                palette: ColorPalette.zinc,
+                                              )
+                                              .small,
+                                    ),
+                                    Text(
+                                      department ?? '',
+                                      style:
+                                          context
+                                              .textStyle(
+                                                palette: ColorPalette.zinc,
+                                              )
+                                              .medium,
+                                    ),
+                                    const SizedBox(height: 4),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
+
+                      // Text(
+                      //   'Welcome back, ${fullName ?? 'User'}',
+                      //   style:
+                      //       context
+                      //           .textStyle(palette: ColorPalette.sherpa_blue)
+                      //           .header4
+                      //           .bold,
+                      // ),
                       SizedBox(height: 20.h),
 
                       /// Status Card
@@ -125,22 +280,30 @@ class _DashboardState extends State<Dashboard> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
+                        color: Colors.white,
                         child: Padding(
-                          padding: EdgeInsets.all(16.r),
+                          padding: AppPadding.cardPadding,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Row(
+                              Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     "Today's Status",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style:
+                                        context
+                                            .textStyle(
+                                              palette: ColorPalette.sherpa_blue,
+                                            )
+                                            .header6
+                                            .bold,
                                   ),
-                                  Icon(Icons.access_time, color: Colors.blue),
+                                  const Icon(
+                                    Icons.access_time,
+                                    color: Colors.blue,
+                                  ),
                                 ],
                               ),
                               SizedBox(height: 10.h),
@@ -158,25 +321,30 @@ class _DashboardState extends State<Dashboard> {
                       /// Profile Information
                       Card(
                         elevation: 2,
+                        color: Colors.white,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.all(16),
+                          padding: AppPadding.cardPadding,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Row(
+                              Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
                                   Text(
                                     "Profile Information",
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                    style:
+                                        context
+                                            .textStyle(
+                                              palette: ColorPalette.sherpa_blue,
+                                            )
+                                            .header6
+                                            .bold,
                                   ),
-                                  Icon(Icons.person, color: Colors.green),
+                                  const Icon(Icons.person, color: Colors.green),
                                 ],
                               ),
                               const SizedBox(height: 10),
@@ -192,69 +360,8 @@ class _DashboardState extends State<Dashboard> {
                       ),
                       const SizedBox(height: 20),
 
-                      /// Leave Request Card (placeholder content)
-                      // Card(
-                      //   elevation: 2,
-                      //   shape: RoundedRectangleBorder(
-                      //     borderRadius: BorderRadius.circular(12),
-                      //   ),
-                      //   child: Padding(
-                      //     padding: const EdgeInsets.all(16),
-                      //     child: Column(
-                      //       crossAxisAlignment: CrossAxisAlignment.start,
-                      //       children: [
-                      //         const Row(
-                      //           mainAxisAlignment:
-                      //               MainAxisAlignment.spaceBetween,
-                      //           children: [
-                      //             Text(
-                      //               "Recent Leave Requests",
-                      //               style: TextStyle(
-                      //                 fontWeight: FontWeight.bold,
-                      //               ),
-                      //             ),
-                      //             Icon(
-                      //               Icons.calendar_today_outlined,
-                      //               color: Colors.orange,
-                      //             ),
-                      //           ],
-                      //         ),
-                      //         const SizedBox(height: 20),
-                      //         SingleChildScrollView(
-                      //           scrollDirection: Axis.horizontal,
-                      //           child: DataTable(
-                      //             headingRowColor:
-                      //                 const MaterialStatePropertyAll(
-                      //                   Colors.grey,
-                      //                 ),
-                      //             columns: const [
-                      //               DataColumn(label: Text('LEAVE TYPE')),
-                      //               DataColumn(label: Text('START DATE')),
-                      //               DataColumn(label: Text('END DATE')),
-                      //               DataColumn(label: Text('STATUS')),
-                      //               DataColumn(label: Text('REQUESTED ON')),
-                      //             ],
-                      //             rows: const [
-                      //               DataRow(
-                      //                 cells: [
-                      //                   DataCell(Text('')),
-                      //                   DataCell(Text('')),
-                      //                   DataCell(Text('')),
-                      //                   DataCell(Text('')),
-                      //                   DataCell(Text('')),
-                      //                 ],
-                      //               ),
-                      //             ],
-                      //           ),
-                      //         ),
-                      //         const SizedBox(height: 10),
-                      //         const Center(
-                      //           child: Text("No leave requests found"),
-                      //         ),
-                      //       ],
-                      //     ),
-                      //   ),
-                      // ),
+                      /// Leave Request Table
+                      const LeaveRequestTablePage(),
                     ],
                   ),
                 ),

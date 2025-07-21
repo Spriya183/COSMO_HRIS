@@ -5,7 +5,7 @@ import 'package:attendance_system/service/api_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class FatchLeavePolicyApiServices {
+class fetchLeavePolicyApiServices {
   static final _storage = FlutterSecureStorage();
   static const _cookieKey = 'sessionCookie';
 
@@ -14,7 +14,7 @@ class FatchLeavePolicyApiServices {
   }
 
   static Future<Map<String, dynamic>> fetchLeavePolicy() async {
-    final url = Config.getFatchLeavePolicy;
+    final url = Config.getfetchLeavePolicy;
 
     try {
       String? sessionCookie = await _getSessionCookie();

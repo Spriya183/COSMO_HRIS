@@ -1,13 +1,15 @@
+import 'package:attendance_system/biomatric/biomatric.dart';
 import 'package:attendance_system/core/common/custom_button.dart';
 import 'package:attendance_system/core/common/custom_dropdown.dart';
 import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:attendance_system/core/common/custom_form_field.dart';
 import 'package:attendance_system/core/common/custom_validation.dart';
 import 'package:attendance_system/feature/login/login_page.dart';
-import 'package:flutter/material.dart';
 import 'package:attendance_system/api_services/quick_attendance_api_services.dart';
-
+import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:local_auth/local_auth.dart';
 
 class QuickAttendance extends StatefulWidget {
   const QuickAttendance({super.key});
@@ -23,7 +25,14 @@ class _QuickAttendanceState extends State<QuickAttendance> {
 
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController actionController = TextEditingController();
+
+  bool alreadyEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    checkBiometricStatus();
+  }
 
   @override
   void dispose() {
@@ -32,8 +41,149 @@ class _QuickAttendanceState extends State<QuickAttendance> {
     super.dispose();
   }
 
+  Future<void> checkBiometricStatus() async {
+    final storage = FlutterSecureStorage();
+    final isEnabled = await storage.read(key: 'biometric_enabled');
+    setState(() {
+      alreadyEnabled = isEnabled == 'true';
+    });
+  }
+
+  void biometricAutoLogin(String username, String password) async {
+    // Ask user to choose Check In / Check Out
+    String? action = await showDialog<String>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+            contentPadding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
+            actionsPadding: const EdgeInsets.only(right: 16, bottom: 12),
+            title: const Text(
+              "Choose Action",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Color(0xff004E64),
+              ),
+            ),
+            content: const Text(
+              "Please select Check In or Check Out.",
+              style: TextStyle(fontSize: 16, color: Colors.black87),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, 'Check In'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                ),
+                child: const Text(
+                  "Check In",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, 'Check Out'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                ),
+                child: const Text(
+                  "Check Out",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+    );
+
+    if (action != null) {
+      setState(() {
+        emailController.text = username;
+        passwordController.text = password;
+        selectedOption = action;
+      });
+
+      HandlequickAttendance();
+    }
+  }
+
+  Future<void> _askToEnableBiometric(String username, String password) async {
+    final _secureStorage = const FlutterSecureStorage();
+
+    final alreadyEnabled =
+        await _secureStorage.read(key: 'biometric_enabled') == 'true';
+    if (alreadyEnabled) return;
+
+    bool? enable = await showDialog<bool>(
+      context: context,
+      builder:
+          (_) => AlertDialog(
+            title: const Text("Enable Biometric QuickAttendance"),
+            content: const Text(
+              "Would you like to enable biometric login for faster sign-in next time?",
+            ),
+            actionsAlignment: MainAxisAlignment.start,
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text("No"),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text("Yes"),
+              ),
+            ],
+          ),
+    );
+
+    if (enable == true) {
+      final auth = LocalAuthentication();
+      final didAuthenticate = await auth.authenticate(
+        localizedReason:
+            'Scan your fingerprint to enable biometric for Quick Attendance',
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+          stickyAuth: true,
+        ),
+      );
+
+      if (didAuthenticate) {
+        await _secureStorage.write(key: 'biometric_enabled', value: 'true');
+        await _secureStorage.write(key: 'username', value: username);
+        await _secureStorage.write(key: 'password', value: password);
+
+        ShowDialog(
+          context: context,
+        ).showSucessStateDialog(body: 'Biometric QuickAttendance enabled');
+      }
+    }
+  }
+
   Future<void> HandlequickAttendance() async {
     if (_formKey.currentState!.validate()) {
+      if (selectedOption.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please select Check In or Check Out')),
+        );
+        return;
+      }
+
       final email = emailController.text.trim();
       final password = passwordController.text.trim();
       final action = selectedOption.toUpperCase().replaceAll(' ', '');
@@ -43,6 +193,7 @@ class _QuickAttendanceState extends State<QuickAttendance> {
         barrierDismissible: false,
         builder: (_) => const Center(child: CircularProgressIndicator()),
       );
+
       try {
         final response =
             await QuickAttendanceApiServices.quickAttendanceAuthentication(
@@ -54,11 +205,12 @@ class _QuickAttendanceState extends State<QuickAttendance> {
         Navigator.pop(context);
 
         if (response['code'] == 200) {
-          Future.delayed(Duration(seconds: 2), () {
-            ShowDialog(
-              context: context,
-            ).showSucessStateDialog(body: response['message']);
-          });
+          ShowDialog(
+            context: context,
+          ).showSucessStateDialog(body: response['message']);
+
+          // Ask to enable biometric only after success
+          await _askToEnableBiometric(email, password);
         } else {
           ShowDialog(
             context: context,
@@ -77,11 +229,11 @@ class _QuickAttendanceState extends State<QuickAttendance> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xff004E64),
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: SafeArea(
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Stack(
+          children: [
+            SafeArea(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -114,7 +266,6 @@ class _QuickAttendanceState extends State<QuickAttendance> {
 
                   SizedBox(height: 15.h),
 
-                  // Title text
                   Text(
                     'COSMO HRIS',
                     style: TextStyle(
@@ -124,100 +275,109 @@ class _QuickAttendanceState extends State<QuickAttendance> {
                     ),
                   ),
 
-                  SizedBox(height: 55.h),
+                  SizedBox(height: 20.h),
 
-                  Container(
-                    width: double.infinity,
-                    height: 478.h,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 25.w,
-                      vertical: 20.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(30.r),
-                        topRight: Radius.circular(30.r),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Container(
+                      width: double.infinity,
+                      height: 515.h,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 25.w,
+                        vertical: 20.h,
                       ),
-                    ),
-
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Fill your details',
-                            style: TextStyle(
-                              color: Color(0xff004E64),
-                              fontSize: 20.sp,
-                              fontWeight: FontWeight.w700,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30.r),
+                          topRight: Radius.circular(30.r),
+                        ),
+                      ),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Fill your details',
+                              style: TextStyle(
+                                color: Color(0xff004E64),
+                                fontSize: 20.sp,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 20.h),
-                          CustomTextfield(
-                            controller: emailController,
-                            hint: 'Enter Your Email',
-                            label: 'Email',
-                            prefixIcon: const Icon(Icons.email),
-                            validator: Validation.validUserName,
-                          ),
-                          SizedBox(height: 20.h),
-                          CustomTextfield(
-                            controller: passwordController,
-                            hint: 'Enter your password',
-                            label: 'Password',
-                            isPassword: true,
-                            prefixIcon: Icon(Icons.lock),
-                            validator: Validation.passwordValidation,
-                          ),
-                          SizedBox(height: 20.h),
+                            SizedBox(height: 20.h),
 
-                          CustomDropdown(
-                            selectedValue: selectedOption,
-                            items: optionList,
-                            label: ' Select Options',
-                            onChanged: (value) {
-                              setState(() {
-                                selectedOption = value ?? '';
-                              });
-                            },
-                          ),
-                          SizedBox(height: 30.h),
+                            CustomTextfield(
+                              controller: emailController,
+                              hint: 'Enter Your Email',
+                              label: 'Email',
+                              prefixIcon: const Icon(Icons.email),
+                              validator: Validation.validUserName,
+                            ),
+                            SizedBox(height: 20.h),
 
-                          CustomButton(
-                            text: 'Submit Attendance',
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                HandlequickAttendance();
-                              }
-                            },
-                          ),
+                            CustomTextfield(
+                              controller: passwordController,
+                              hint: 'Enter your password',
+                              label: 'Password',
+                              isPassword: true,
+                              prefixIcon: Icon(Icons.lock),
+                              validator: Validation.passwordValidation,
+                            ),
+                            SizedBox(height: 20.h),
 
-                          SizedBox(height: 20.h),
-                          CustomButton(
-                            backgroundColor: Colors.white,
-                            borderColor: const Color(0xff004E64),
-                            textColor: Color(0xff004E64),
-                            text: 'Log In',
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const Loginpage(),
-                                ),
-                              );
-                            },
-                          ),
-                        ],
+                            CustomDropdown(
+                              selectedValue: selectedOption,
+                              items: optionList,
+                              label: 'Select Options',
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedOption = value ?? '';
+                                });
+                              },
+                            ),
+                            SizedBox(height: 15.h),
+
+                            CustomButton(
+                              text: 'Quick Attendance',
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  HandlequickAttendance();
+                                }
+                              },
+                            ),
+
+                            SizedBox(height: 20.h),
+
+                            CustomButton(
+                              backgroundColor: Colors.white,
+                              borderColor: const Color(0xff004E64),
+                              textColor: Color(0xff004E64),
+                              text: 'Log In',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const Loginpage(),
+                                  ),
+                                );
+                              },
+                            ),
+
+                            SizedBox(height: 10.h),
+
+                            BiometricLoginScreen(onLogin: biometricAutoLogin),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

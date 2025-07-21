@@ -53,8 +53,8 @@ class LoginApiService {
     }
   }
 
-  // Getter for session cookie
-  static Future<String?> getSessionCookie() async {
-    return await _storage.read(key: _cookieKey);
-  }
+  //   // Getter for session cookie
+  //   static Future<String?> getSessionCookie() async {
+  //     return await _storage.read(key: _cookieKey);
+  //   }
 }

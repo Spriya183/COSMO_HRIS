@@ -1,6 +1,6 @@
 class Config {
-  static const String baseUrl = "https://5712a97b5f16.ngrok-free.app";
-  //static const String baseUrl = "https://api.cosmotechintl.com/COSMO_HRIS";
+  static const String baseUrl = "https://fa9c6bc7d34e.ngrok-free.app";
+  // static const String baseUrl = "https://api.cosmotechintl.com/COSMO_HRIS";
 
   // For login
   static const String _loginEndpoint = "api/v1/auth/authenticate";
@@ -48,15 +48,15 @@ class Config {
   static const String _addLeaveRequest = "api/v1/leave-request/create";
   static String get getAddLeaveRequest => "$baseUrl/$_addLeaveRequest";
 
-  // add fatch leave policy
-  static const String _fatchLeavePolicy = "api/v1/leave-policy/get";
-  static String get getFatchLeavePolicy => "$baseUrl/$_fatchLeavePolicy";
+  // add fetch leave policy
+  static const String _fetchLeavePolicy = "api/v1/leave-policy/get";
+  static String get getfetchLeavePolicy => "$baseUrl/$_fetchLeavePolicy";
 
-  // add fatch leave policy
+  // add fetch leave policy
   static const String _retriveLeaveRequestdata = "api/v1/leave-request/get-own";
   static String get getLeaveRequestdata => "$baseUrl/$_retriveLeaveRequestdata";
 
-  // add fatch report recoed
+  // add fetch report recoed
   static const String _retriveReportRecord =
       "api/v1/attendance/getMonthlyRecord";
   static String get getReportRecord => "$baseUrl/$_retriveReportRecord";
@@ -68,4 +68,15 @@ class Config {
   // verify otp
   static const String _veriryOpt = "api/v1/auth/verify-otp";
   static String get getVerifyOtp => "$baseUrl/$_veriryOpt";
+  // resend otp
+  static const String _resendOtp = "api/v1/auth/resend-otp";
+  static String get getResendOtp => "$baseUrl/$_resendOtp";
+
+  // set new password
+  static const String _setForgetPassword = "api/v1/auth/set-forget-password";
+  static String get getsetForgetPassword => "$baseUrl/$_setForgetPassword";
+
+  // change password
+  static const String _ChangePassword = "api/v1/employee/change-password";
+  static String get getChangePassword => "$baseUrl/$_ChangePassword";
 }

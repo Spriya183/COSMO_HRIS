@@ -1,3 +1,4 @@
+import 'package:attendance_system/constant/custom_app_padding.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
 import 'package:attendance_system/feature/attendance/attendance_request_page.dart';
 import 'package:attendance_system/feature/common/attendance_page_container.dart';
@@ -28,35 +29,34 @@ class Attentancepage extends StatefulWidget {
 class _HomepageState extends State<Attentancepage> {
   final GlobalKey<AttendanceTableState> tableKey =
       GlobalKey<AttendanceTableState>();
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializePage();
+  }
+
+  Future<void> _initializePage() async {
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   Future<void> _handleCheckIn() async {
     final result = await CheckinApiServices.checkinRecord();
-
-    // Future.delayed(Duration(seconds: 2), () async {
     ShowDialog(context: context).showSucessStateDialog(body: result['message']);
-    // });
-
-    // ScaffoldMessenger.of(context).showSnackBar(
-    //   SnackBar(
-    //     content: Text(result['message']),
-    //     backgroundColor: result['status'] ? Colors.green : Colors.red,
-    //   ),
-    // );
-
-    //  Refresh the table after check-in
     tableKey.currentState?.loadRecords();
   }
 
   Future<void> _handleCheckout() async {
     final result = await CheckoutApiServices.checkoutRecord();
+    ShowDialog(context: context).showSucessStateDialog(body: result['message']);
+    tableKey.currentState?.loadRecords();
+  }
 
-    Future.delayed(Duration(seconds: 2), () async {
-      ShowDialog(
-        context: context,
-      ).showSucessStateDialog(body: result['message']);
-    });
-
-    //  Refresh the table after check-out
+  Future<void> _handleRefresh() async {
+    // Reload the attendance table
     tableKey.currentState?.loadRecords();
   }
 
@@ -78,63 +78,69 @@ class _HomepageState extends State<Attentancepage> {
       ),
       colors: const Color(0xff004E64),
       bodyColor: Colors.white,
-      body: Padding(
-        padding: EdgeInsets.all(25.r),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: 30.h),
-              Row(
-                children: [
-                  Expanded(
-                    child: attendancePageContainer(
-                      title: 'Check In',
-                      titlecolor: Colors.black,
-                      borderColor: Colors.grey,
-                      backgroundColor: Colors.cyan,
-                      buttonTextColor: Colors.white,
-                      onPressed: _handleCheckIn,
-                    ),
-                  ),
-                  SizedBox(width: 10.h),
-                  Expanded(
-                    child: attendancePageContainer(
-                      title: 'Check Out',
-                      titlecolor: Colors.black,
-                      borderColor: Colors.grey,
-                      backgroundColor: Colors.redAccent,
-                      buttonTextColor: Colors.white,
-                      onPressed: _handleCheckout,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 10.h),
-              attendancePageContainer(
-                title: 'Attendance Request',
-                titlecolor: Colors.black,
-                borderColor: Colors.grey,
-                backgroundColor: Colors.green,
-                buttonTextColor: Colors.white,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RequestAttendancePage(),
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: 50.h),
+      body:
+          isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : RefreshIndicator(
+                onRefresh: _handleRefresh,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: AppPadding.basePagePadding,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 30.h),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: AttendancePageContainer(
+                              title: 'Check In',
+                              titlecolor: Colors.black,
+                              borderColor: Colors.grey,
+                              backgroundColor: Colors.cyan,
+                              icon: Icons.login,
+                              onPressed: _handleCheckout,
+                              buttonTextColor: Colors.white,
+                            ),
+                          ),
+                          SizedBox(width: 4),
+                          Expanded(
+                            child: AttendancePageContainer(
+                              title: 'Check Out',
+                              titlecolor: Colors.black,
+                              borderColor: Colors.grey,
+                              backgroundColor: Colors.red.shade400,
+                              icon: Icons.logout,
+                              onPressed: _handleCheckout,
+                              buttonTextColor: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 10.h),
+                      AttendancePageContainer(
+                        title: 'Attendance Request',
+                        titlecolor: Colors.black,
+                        borderColor: Colors.grey,
+                        backgroundColor: Colors.cyan,
+                        icon: Icons.add_alert_outlined,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RequestAttendancePage(),
+                            ),
+                          );
+                        },
+                        buttonTextColor: Colors.white,
+                      ),
 
-              // ✅ Use GlobalKey here to refresh table dynamically
-              AttendanceTable(key: tableKey),
-
-              SizedBox(height: 100.h),
-            ],
-          ),
-        ),
-      ),
+                      SizedBox(height: 10.h),
+                      AttendanceTable(key: tableKey),
+                    ],
+                  ),
+                ),
+              ),
     );
   }
 }

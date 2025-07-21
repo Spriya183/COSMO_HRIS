@@ -1,12 +1,13 @@
 // menubar_drawer
 
 import 'package:attendance_system/core/common/custom_error_success_box.dart';
-import 'package:attendance_system/core/common/custom_logout_dialogue_box.dart';
+import 'package:attendance_system/feature/logout/custom_logout_dialogue_box.dart';
 import 'package:attendance_system/feature/common/buttom_nav_bar.dart';
 import 'package:attendance_system/feature/dashboard/dashboard.dart';
 import 'package:attendance_system/feature/leave_request/leave_request_page.dart';
 import 'package:attendance_system/feature/login/login_page.dart';
 import 'package:attendance_system/feature/report/report_page.dart';
+import 'package:attendance_system/feature/setting/settingpage.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_system/api_services/logout_api_service.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -28,7 +29,7 @@ class MenubarDrawer extends StatelessWidget {
 
       if (result['code'] == 200) {
         // Show success message
-        Future.delayed(Duration(seconds: 2), () async {
+        Future.delayed(Duration(microseconds: 100), () async {
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (context) => const Loginpage()),
@@ -50,7 +51,7 @@ class MenubarDrawer extends StatelessWidget {
         // Show failure message
         ShowDialog(
           context: context,
-        ).showSucessStateDialog(body: result['message']);
+        ).showErrorStateDialog(body: result['message']);
       }
     } catch (e) {
       Navigator.pop(context); // Ensure dialog is dismissed on error
@@ -66,47 +67,18 @@ class MenubarDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.only(top: 40.h, left: 20.w),
         children: [
-          Center(
-            child: Text(
-              'Cosmo Hris',
-              style: TextStyle(
-                color: Color(0xff004E64),
-                fontSize: 20.sp,
-                fontWeight: FontWeight.bold,
-              ),
+          Text(
+            'Cosmo Hris',
+            style: TextStyle(
+              color: Color(0xff004E64),
+              fontSize: 20.sp,
+              fontWeight: FontWeight.bold,
             ),
           ),
           const Divider(color: Colors.grey, thickness: 0.5),
+
           ListTile(
-            leading: const Icon(Icons.dashboard, color: Color(0xff004E64)),
-            title: const Text('Dashboard'),
-            onTap: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) => Dashboard(
-                        scaffoldKey: GlobalKey<ScaffoldState>(),
-                        onDrawerChanged: (bool isOpen) {
-                          //logic
-                        },
-                      ),
-                ),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.access_time, color: Color(0xff004E64)),
-            title: const Text('Attendance'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => BottomNavBar()),
-              );
-            },
-          ),
-          ListTile(
-            leading: const Icon(Icons.request_page, color: Color(0xff004E64)),
+            leading: const Icon(Icons.assignment_add, color: Color(0xff004E64)),
             title: const Text('Leave Request'),
             onTap: () {
               Navigator.push(
@@ -118,14 +90,24 @@ class MenubarDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.report, color: Color(0xff004E64)),
-            title: const Text('Reports'),
+            leading: const Icon(Icons.history, color: Color(0xff004E64)),
+            title: const Text('All records'),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const AttendanceReportPage(),
                 ),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.settings, color: Color(0xff004E64)),
+            title: const Text('Settings'),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SettingsPage()),
               );
             },
           ),

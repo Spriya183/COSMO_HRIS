@@ -10,6 +10,9 @@ class CustomTextfield extends StatefulWidget {
   final int? maxLines;
   final Widget? prefixIcon;
 
+  final EdgeInsets? customPadding;
+  final TextAlignVertical? customTextAlignVertical;
+
   const CustomTextfield({
     super.key,
     this.label,
@@ -20,6 +23,8 @@ class CustomTextfield extends StatefulWidget {
     this.maxLines,
     this.isPassword = false,
     this.prefixIcon,
+    this.customPadding,
+    this.customTextAlignVertical,
   });
 
   @override
@@ -37,13 +42,14 @@ class _CustomTextFieldState extends State<CustomTextfield> {
       validator: widget.validator,
       obscureText: widget.isPassword ? _showpassword : false,
       maxLines: widget.maxLines ?? 1,
+      textAlignVertical:
+          widget.customTextAlignVertical ?? TextAlignVertical.center,
       decoration: InputDecoration(
         labelText: widget.label,
         hintText: widget.hint,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 4.0,
-          horizontal: 10.0,
-        ),
+        contentPadding:
+            widget.customPadding ??
+            const EdgeInsets.symmetric(vertical: 4.0, horizontal: 10.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
         prefixIcon: widget.prefixIcon,
         suffixIcon:

@@ -229,21 +229,43 @@ class _DashboardState extends State<Dashboard> {
                                   child: Row(
                                     children: [
                                       Column(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          ClipOval(
-                                            child:
-                                                (imageUrl != null &&
-                                                        imageUrl!.isNotEmpty)
-                                                    ? Image.network(
-                                                      '${Config.baseUrl}${imageUrl!.startsWith('/') ? '' : '/'}$imageUrl',
-                                                      height: 67.h,
-                                                      width: 67.h,
-                                                      fit: BoxFit.cover,
-                                                      errorBuilder:
-                                                          (_, __, ___) =>
-                                                              _buildFallbackImage(),
-                                                    )
-                                                    : _buildFallbackImage(),
+                                          Stack(
+                                            children: [
+                                              ClipOval(
+                                                child:
+                                                    (imageUrl != null &&
+                                                            imageUrl!
+                                                                .isNotEmpty)
+                                                        ? Image.network(
+                                                          '${Config.baseUrl}${imageUrl!.startsWith('/') ? '' : '/'}$imageUrl',
+                                                          height: 67.h,
+                                                          width: 67.h,
+                                                          fit: BoxFit.cover,
+                                                          errorBuilder:
+                                                              (_, __, ___) =>
+                                                                  _buildFallbackImage(),
+                                                        )
+                                                        : _buildFallbackImage(),
+                                              ),
+                                              Positioned(
+                                                bottom: 4,
+                                                right: 4,
+                                                child: Container(
+                                                  width: 14,
+                                                  height: 14,
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.green,
+                                                    shape: BoxShape.circle,
+                                                    border: Border.all(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                           const SizedBox(height: 10),
                                           Text(
@@ -258,6 +280,7 @@ class _DashboardState extends State<Dashboard> {
                                           ),
                                         ],
                                       ),
+
                                       const SizedBox(width: 16),
                                       Column(
                                         mainAxisAlignment:
@@ -282,14 +305,6 @@ class _DashboardState extends State<Dashboard> {
                                                         .bold,
                                               ),
                                               const SizedBox(width: 50),
-                                              Container(
-                                                width: 10,
-                                                height: 10,
-                                                decoration: const BoxDecoration(
-                                                  color: Colors.green,
-                                                  shape: BoxShape.circle,
-                                                ),
-                                              ),
                                             ],
                                           ),
 

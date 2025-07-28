@@ -1,11 +1,36 @@
+import 'package:attendance_system/api_services/employee_authentication_api_services.dart';
 import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
-class Biometricdisable extends StatelessWidget {
+class BiometricDisable extends StatefulWidget {
   final VoidCallback onDisabled;
 
-  const Biometricdisable({super.key, required this.onDisabled});
+  const BiometricDisable({super.key, required this.onDisabled});
+
+  @override
+  State<BiometricDisable> createState() => _BiometricDisableState();
+}
+
+class _BiometricDisableState extends State<BiometricDisable> {
+  String? email;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchEmployeeEmail();
+  }
+
+  Future<void> _fetchEmployeeEmail() async {
+    final authResponse =
+        await EmployeeAuthenticationApiServices.authenticateEmployee();
+
+    if (authResponse != null && authResponse.data != null) {
+      setState(() {
+        email = authResponse.data!.email;
+      });
+    }
+  }
 
   Future<void> _disableBiometric(BuildContext context) async {
     const storage = FlutterSecureStorage();
@@ -15,13 +40,13 @@ class Biometricdisable extends StatelessWidget {
     await storage.delete(key: 'username');
     await storage.delete(key: 'password');
 
-    // Show success
+    // Show success dialog
     ShowDialog(
       context: context,
-    ).showSucessStateDialog(body: "Biomatric Disable Sucessfully");
+    ).showSucessStateDialog(body: "Biometric Disabled Successfully");
 
-    // Call callback to update parent
-    onDisabled();
+    // Callback to parent
+    widget.onDisabled();
   }
 
   @override
@@ -30,7 +55,6 @@ class Biometricdisable extends StatelessWidget {
       child: Center(
         child: Container(
           width: double.infinity,
-
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Colors.white,
@@ -59,9 +83,9 @@ class Biometricdisable extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              const Text(
-                'Logged in as:',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
+              Text(
+                'Logged in as: ${email ?? ''}',
+                style: const TextStyle(fontSize: 14, color: Colors.grey),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 10),

@@ -332,14 +332,15 @@ class _LoginpageState extends State<Loginpage> {
                                 },
                               ),
                               SizedBox(height: 30.h),
-                              if (alreadyEnabled)
-                                Biometricdisable(
-                                  onDisabled: () {
-                                    setState(() {
-                                      alreadyEnabled = false;
-                                    });
-                                  },
-                                ),
+                              alreadyEnabled
+                                  ? BiometricDisable(
+                                    onDisabled: () {
+                                      setState(() {
+                                        alreadyEnabled = false;
+                                      });
+                                    },
+                                  )
+                                  : SizedBox.shrink(),
                             ],
                           ),
                         ),

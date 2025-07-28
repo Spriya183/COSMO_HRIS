@@ -165,12 +165,27 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           child: Column(
             children: [
               SizedBox(height: 20.h),
-              ClipOval(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 100.w,
-                  height: 100.h,
-                  fit: BoxFit.cover,
+              Container(
+                width: 120.w,
+                height: 120.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10.r,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                  border: Border.all(color: Colors.white, width: 1.w),
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: 100.w,
+                    height: 100.w,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               SizedBox(height: 20.h),

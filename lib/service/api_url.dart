@@ -1,6 +1,6 @@
 class Config {
-  static const String baseUrl = "https://fa9c6bc7d34e.ngrok-free.app";
-  // static const String baseUrl = "https://api.cosmotechintl.com/COSMO_HRIS";
+  //static const String baseUrl = "https://edf6d8ecf612.ngrok-free.app";
+  static const String baseUrl = "https://api.cosmotechintl.com/COSMO_HRIS";
 
   // For login
   static const String _loginEndpoint = "api/v1/auth/authenticate";

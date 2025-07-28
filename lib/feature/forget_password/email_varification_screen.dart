@@ -75,77 +75,80 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       centerTitle: true,
       colors: const Color(0xff004E64),
       bodyColor: Colors.white,
-      body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 24.w),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 40.h),
-            Container(
-              width: 100.w,
-              height: 100.h,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black26,
-                    blurRadius: 10.r,
-                    offset: const Offset(0, 4),
+      body: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24.w),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(height: 40.h),
+              Container(
+                width: 120.w,
+                height: 120.w,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black26,
+                      blurRadius: 10.r,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                  border: Border.all(color: Colors.white, width: 1.w),
+                ),
+                child: ClipOval(
+                  child: Image.asset(
+                    'assets/images/logo.png',
+                    width: 100.w,
+                    height: 100.w,
+                    fit: BoxFit.cover,
                   ),
-                ],
-                border: Border.all(color: Colors.white, width: 1.w),
-              ),
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/images/logo.png',
-                  width: 100.w,
-                  height: 100.h,
-                  fit: BoxFit.cover,
                 ),
               ),
-            ),
-            SizedBox(height: 24.h),
-            Text(
-              'Forgot Password',
-              style: TextStyle(
-                fontSize: 22.sp,
-                fontWeight: FontWeight.w600,
-                color: Color(0xff004E64),
+              SizedBox(height: 24.h),
+              Text(
+                'Forgot Password',
+                style: TextStyle(
+                  fontSize: 22.sp,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xff004E64),
+                ),
               ),
-            ),
-            SizedBox(height: 8.h),
-            Text(
-              'Enter your email to receive a password reset OTP',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14.sp, color: Color(0xff004E64)),
-            ),
-            SizedBox(height: 30.h),
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  CustomTextfield(
-                    controller: emailController,
-                    hint: 'Enter Your Email',
-                    label: 'Email',
-                    validator: Validation.validUserName,
-                    prefixIcon: const Icon(Icons.email),
-                  ),
-                  SizedBox(height: 30.h),
-                  CustomButton(
-                    text: 'Send OTP',
-                    prefixIcon: const Icon(Icons.send, color: Colors.white),
+              SizedBox(height: 8.h),
+              Text(
+                'Enter your email to receive a password reset OTP',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14.sp, color: Color(0xff004E64)),
+              ),
+              SizedBox(height: 30.h),
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    CustomTextfield(
+                      controller: emailController,
+                      hint: 'Enter Your Email',
+                      label: 'Email',
+                      validator: Validation.validUserName,
+                      prefixIcon: const Icon(Icons.email),
+                    ),
+                    SizedBox(height: 30.h),
+                    CustomButton(
+                      text: 'Send OTP',
+                      prefixIcon: const Icon(Icons.send, color: Colors.white),
 
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        handleOtp(context);
-                      }
-                    },
-                  ),
-                ],
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          handleOtp(context);
+                        }
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

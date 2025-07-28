@@ -9,6 +9,7 @@ class CustomButton extends StatelessWidget {
   final Color? borderColor;
   final VoidCallback onPressed;
   final Widget? prefixIcon;
+  final Color? iconColor;
 
   const CustomButton({
     super.key,
@@ -19,6 +20,7 @@ class CustomButton extends StatelessWidget {
     this.borderColor,
     required this.onPressed,
     this.prefixIcon,
+    this.iconColor,
   });
 
   @override
@@ -44,9 +46,10 @@ class CustomButton extends StatelessWidget {
           children: [
             if (prefixIcon != null) ...[
               IconTheme(
-                data: const IconThemeData(color: Colors.white),
+                data: IconThemeData(color: iconColor ?? Colors.white),
                 child: prefixIcon!,
               ),
+
               SizedBox(width: 8.w),
             ],
             Text(

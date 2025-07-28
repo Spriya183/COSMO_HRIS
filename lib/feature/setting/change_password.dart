@@ -90,63 +90,97 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         onPressed: () => Navigator.of(context).pop(),
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20.r),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              Center(
-                child: ClipOval(
-                  child: Image.asset(
-                    'assets/images/logo.png',
-                    width: 100.w,
-                    height: 100.h,
-                    fit: BoxFit.cover,
+        padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              width: 120.w,
+              height: 120.w,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black26,
+                    blurRadius: 10.r,
+                    offset: Offset(0, 4),
                   ),
+                ],
+                border: Border.all(color: Colors.white, width: 1.w),
+              ),
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/images/logo.png',
+                  width: 100.w,
+                  height: 100.w,
+                  fit: BoxFit.cover,
                 ),
               ),
-              const SizedBox(height: 20),
+            ),
+            SizedBox(height: 20.h),
 
-              /// Current Password
-              CustomTextfield(
-                controller: currentPasswordController,
-                hint: 'Enter Current Password',
-                label: 'Current Password',
-                isPassword: true,
-                validator: Validation.passwordValidation,
-                prefixIcon: const Icon(Icons.lock),
+            /// Card container for the form
+            Container(
+              height: 550,
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16.r),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 12,
+                    offset: Offset(0, 4),
+                  ),
+                ],
               ),
-              const SizedBox(height: 15),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    /// Current Password
+                    CustomTextfield(
+                      controller: currentPasswordController,
+                      hint: 'Enter Current Password',
+                      label: 'Current Password',
+                      isPassword: true,
+                      validator: Validation.passwordValidation,
+                      prefixIcon: const Icon(Icons.lock),
+                    ),
+                    SizedBox(height: 16.h),
 
-              /// New Password
-              CustomTextfield(
-                controller: newPasswordController,
-                hint: 'Enter New Password',
-                label: 'New Password',
-                isPassword: true,
-                validator: Validation.passwordValidation,
-                prefixIcon: const Icon(Icons.lock_outline),
-              ),
-              const SizedBox(height: 15),
+                    /// New Password
+                    CustomTextfield(
+                      controller: newPasswordController,
+                      hint: 'Enter New Password',
+                      label: 'New Password',
+                      isPassword: true,
+                      validator: Validation.passwordValidation,
+                      prefixIcon: const Icon(Icons.lock_outline),
+                    ),
+                    SizedBox(height: 16.h),
 
-              /// Confirm Password
-              CustomTextfield(
-                controller: confirmPasswordController,
-                hint: 'Confirm New Password',
-                label: 'Confirm Password',
-                isPassword: true,
-                validator: Validation.passwordValidation,
-                prefixIcon: const Icon(Icons.lock_outline),
-              ),
-              const SizedBox(height: 25),
+                    /// Confirm Password
+                    CustomTextfield(
+                      controller: confirmPasswordController,
+                      hint: 'Confirm New Password',
+                      label: 'Confirm Password',
+                      isPassword: true,
+                      validator: Validation.passwordValidation,
+                      prefixIcon: const Icon(Icons.lock_outline),
+                    ),
+                    SizedBox(height: 24.h),
 
-              /// Submit Button
-              CustomButton(
-                text: "Change Password",
-                onPressed: () => handleChangePassword(context),
+                    /// Submit Button inside card
+                    CustomButton(
+                      text: "Change Password",
+                      onPressed: () => handleChangePassword(context),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

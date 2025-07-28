@@ -1,6 +1,7 @@
 import 'package:attendance_system/api_services/logout_api_service.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
 import 'package:attendance_system/core/common/custom_error_success_box.dart';
+import 'package:attendance_system/feature/common/menubar_drawer.dart';
 import 'package:attendance_system/feature/login/login_page.dart';
 import 'package:attendance_system/feature/logout/custom_logout_dialogue_box.dart';
 import 'package:attendance_system/feature/profile/profile.dart';
@@ -12,7 +13,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage({super.key});
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  final Function(bool) onDrawerChanged;
+  const SettingsPage({
+    super.key,
+    required this.scaffoldKey,
+    required this.onDrawerChanged,
+  });
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -61,7 +68,6 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _handleLogout(BuildContext context) async {
-    // Show loading dialog
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -73,7 +79,6 @@ class _SettingsPageState extends State<SettingsPage> {
       Navigator.pop(context); // Dismiss loading dialog
 
       if (result['code'] == 200) {
-        // Show success message
         Future.delayed(Duration(microseconds: 100), () async {
           Navigator.pushAndRemoveUntil(
             context,
@@ -81,25 +86,13 @@ class _SettingsPageState extends State<SettingsPage> {
             (route) => false,
           );
         });
-
-        // ShowDialog(
-        //   context: context,
-        // ).showSucessStateDialog(body: result['message']);
-
-        // // Navigate to login page and clear previous routes
-        // Navigator.pushAndRemoveUntil(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const Loginpage()),
-        //   (route) => false,
-        // );
       } else {
-        // Show failure message
         ShowDialog(
           context: context,
         ).showErrorStateDialog(body: result['message']);
       }
     } catch (e) {
-      Navigator.pop(context); // Ensure dialog is dismissed on error
+      Navigator.pop(context);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
@@ -109,10 +102,16 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return BasePage(
+      scaffoldKey: widget.scaffoldKey,
+      onDrawerChanged: widget.onDrawerChanged,
       title: const Text('Setting', style: TextStyle(color: Colors.white)),
-      leadingWidget: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.white),
-        onPressed: () => Navigator.of(context).pop(),
+      drawer: const MenubarDrawer(),
+      leadingWidget: Builder(
+        builder:
+            (context) => IconButton(
+              icon: const Icon(Icons.menu, color: Colors.white),
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            ),
       ),
       centerTitle: true,
       colors: const Color(0xff004E64),
@@ -120,140 +119,147 @@ class _SettingsPageState extends State<SettingsPage> {
       body:
           isLoading
               ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                padding: EdgeInsets.all(16.r),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CustomCard(
-                      child: ListTile(
-                        contentPadding: EdgeInsets.all(12.r),
-                        leading:
-                            (imageUrl != null && imageUrl!.isNotEmpty)
-                                ? CircleAvatar(
-                                  radius: 25.r,
-                                  backgroundImage: NetworkImage(
-                                    '${Config.baseUrl}${imageUrl!.startsWith('/') ? '' : '/'}$imageUrl',
+              : RefreshIndicator(
+                onRefresh: () async {
+                  setState(() {
+                    isLoading = true;
+                  });
+                  await fetchEmployeeProfile();
+                },
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.all(16.r),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CustomCard(
+                        child: ListTile(
+                          contentPadding: EdgeInsets.all(12.r),
+                          leading:
+                              (imageUrl != null && imageUrl!.isNotEmpty)
+                                  ? CircleAvatar(
+                                    radius: 25.r,
+                                    backgroundImage: NetworkImage(
+                                      '${Config.baseUrl}${imageUrl!.startsWith('/') ? '' : '/'}$imageUrl',
+                                    ),
+                                    onBackgroundImageError: (_, __) {},
+                                  )
+                                  : demoImage(),
+                          title: Text(
+                            fullName ?? '',
+                            style: TextStyle(
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
+                            position ?? '',
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfilePage(),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      SizedBox(height: 16.h),
+                      CustomCard(
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.lock_outline),
+                              title: const Text('Change Password'),
+                              subtitle: const Text('Update your password'),
+                              trailing: const Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16,
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => const ChangePasswordPage(),
                                   ),
-                                  onBackgroundImageError: (_, __) {},
-                                )
-                                : demoImage(),
-                        title: Text(
-                          fullName ?? '',
-                          style: TextStyle(
-                            fontSize: 16.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
+                                );
+                              },
+                            ),
+                            const Divider(),
+                            ListTile(
+                              leading: const Icon(Icons.notifications_none),
+                              title: const Text('Notifications'),
+                              subtitle: const Text(
+                                'Manage notification preferences',
+                              ),
+                              trailing: const Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16,
+                              ),
+                              onTap: () {
+                                // Implement navigation
+                              },
+                            ),
+                          ],
                         ),
-                        subtitle: Text(
-                          position ?? '',
-                          style: TextStyle(fontSize: 14.sp, color: Colors.grey),
+                      ),
+                      SizedBox(height: 16.h),
+                      CustomCard(
+                        child: Column(
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.brightness_2_outlined),
+                              title: const Text('Theme'),
+                              subtitle: const Text('Light'),
+                              trailing: const Icon(Icons.expand_more),
+                              onTap: () {
+                                // Implement theme options
+                              },
+                            ),
+                            const Divider(),
+                            ListTile(
+                              leading: const Icon(Icons.language),
+                              title: const Text('Language'),
+                              subtitle: const Text('English'),
+                              trailing: const Icon(
+                                Icons.arrow_forward_ios,
+                                size: 16,
+                              ),
+                              onTap: () {
+                                // Implement language settings
+                              },
+                            ),
+                          ],
                         ),
-                        trailing: Icon(Icons.arrow_forward_ios, size: 16.sp),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder:
-                                  (context) => ProfilePage(
-                                    scaffoldKey: tempKey,
-                                    onDrawerChanged: (isOpen) {},
-                                  ),
-                            ),
-                          );
-                        },
                       ),
-                    ),
-                    SizedBox(height: 16.h),
-                    CustomCard(
-                      child: Column(
-                        children: [
-                          ListTile(
-                            leading: const Icon(Icons.lock_outline),
-                            title: const Text('Change Password'),
-                            subtitle: const Text('Update your password'),
-                            trailing: const Icon(
-                              Icons.arrow_forward_ios,
-                              size: 16,
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder:
-                                      (context) => const ChangePasswordPage(),
-                                ),
-                              );
-                            },
+                      SizedBox(height: 16.h),
+                      CustomCard(
+                        child: ListTile(
+                          leading: const Icon(Icons.logout, color: Colors.red),
+                          title: const Text(
+                            'Logout',
+                            style: TextStyle(color: Colors.red),
                           ),
-                          const Divider(),
-
-                          ListTile(
-                            leading: const Icon(Icons.notifications_none),
-                            title: const Text('Notifications'),
-                            subtitle: const Text(
-                              'Manage notification preferences',
-                            ),
-                            trailing: const Icon(
-                              Icons.arrow_forward_ios,
-                              size: 16,
-                            ),
-                            onTap: () {
-                              // Implement navigation
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
-                    CustomCard(
-                      child: Column(
-                        children: [
-                          ListTile(
-                            leading: const Icon(Icons.brightness_2_outlined),
-                            title: const Text('Theme'),
-                            subtitle: const Text('Light'),
-                            trailing: const Icon(Icons.expand_more),
-                            onTap: () {
-                              // Implement theme options
-                            },
-                          ),
-                          const Divider(),
-                          ListTile(
-                            leading: const Icon(Icons.language),
-                            title: const Text('Language'),
-                            subtitle: const Text('English'),
-                            trailing: const Icon(
-                              Icons.arrow_forward_ios,
-                              size: 16,
-                            ),
-                            onTap: () {
-                              // Implement language settings
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 16.h),
-                    CustomCard(
-                      child: ListTile(
-                        leading: const Icon(Icons.logout, color: Colors.red),
-                        title: const Text(
-                          'Logout',
-                          style: TextStyle(color: Colors.red),
+                          subtitle: const Text('Sign out your account'),
+                          onTap: () async {
+                            final shouldLogout = await showLogoutDialog(
+                              context,
+                            );
+                            if (shouldLogout == true) {
+                              await _handleLogout(context);
+                            }
+                          },
                         ),
-                        subtitle: const Text('sign out your account'),
-
-                        onTap: () async {
-                          final shouldLogout = await showLogoutDialog(context);
-
-                          if (shouldLogout == true) {
-                            await _handleLogout(context);
-                          }
-                        },
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
     );

@@ -1,8 +1,8 @@
 import 'package:attendance_system/feature/attendance/attendance_page.dart';
 import 'package:attendance_system/feature/dashboard/dashboard.dart';
 import 'package:attendance_system/feature/profile/profile.dart';
+import 'package:attendance_system/feature/setting/settingpage.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class BottomNavBar extends StatefulWidget {
@@ -51,7 +51,12 @@ class _BottomNavBarState extends State<BottomNavBar> {
         scaffoldKey: _scaffoldKey,
         onDrawerChanged: _handleDrawerChanged,
       ),
-      ProfilePage(
+
+      // ProfilePage(
+      //   scaffoldKey: _scaffoldKey,
+      //   onDrawerChanged: _handleDrawerChanged,
+      // ),
+      SettingsPage(
         scaffoldKey: _scaffoldKey,
         onDrawerChanged: _handleDrawerChanged,
       ),
@@ -90,7 +95,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
                     selectedItemColor: const Color(0xff004E64),
                     unselectedItemColor: Colors.grey,
                     type: BottomNavigationBarType.fixed,
-                    items: const [
+                    items: [
                       BottomNavigationBarItem(
                         icon: Icon(Icons.dashboard),
                         label: 'Dashboard',
@@ -100,8 +105,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
                         label: 'Attendance',
                       ),
                       BottomNavigationBarItem(
-                        icon: Icon(Icons.person),
-                        label: 'Profile',
+                        icon: Icon(Icons.settings),
+                        label: 'Setting',
                       ),
                     ],
                   ),

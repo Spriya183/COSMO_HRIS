@@ -8,7 +8,7 @@ class AttendancePageContainer extends StatelessWidget {
   final Color borderColor;
   final Color backgroundColor;
   final IconData? icon;
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final Color buttonTextColor;
 
   const AttendancePageContainer({
@@ -25,7 +25,7 @@ class AttendancePageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 20.h),
+      margin: EdgeInsets.only(bottom: 10.h),
       padding: AppPadding.cardPadding,
       decoration: BoxDecoration(
         color: Colors.white,
@@ -72,7 +72,7 @@ class AttendancePageContainer extends StatelessWidget {
                 children: [
                   if (icon != null) ...[
                     Icon(icon, color: buttonTextColor),
-                    SizedBox(width: 5.w),
+                    SizedBox(width: 1.w),
                   ],
                   Text(
                     title,

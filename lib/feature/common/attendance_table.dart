@@ -68,22 +68,22 @@ class AttendanceTableState extends State<AttendanceTable> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          SizedBox(height: 20.h),
-          Text(
-            'Attendance Record',
-            style:
-                context
-                    .textStyle(palette: ColorPalette.sherpa_blue)
-                    .header6
-                    .bold,
-          ),
-          SizedBox(height: 10.h),
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
+    return isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Center(
+          child: Column(
+            children: [
+              SizedBox(height: 20.h),
+              Text(
+                'Attendance Record',
+                style:
+                    context
+                        .textStyle(palette: ColorPalette.sherpa_blue)
+                        .header6
+                        .bold,
+              ),
+              SizedBox(height: 10.h),
+              SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: DataTable(
                   columns: [
@@ -144,8 +144,8 @@ class AttendanceTableState extends State<AttendanceTable> {
                       }).toList(),
                 ),
               ),
-        ],
-      ),
-    );
+            ],
+          ),
+        );
   }
 }

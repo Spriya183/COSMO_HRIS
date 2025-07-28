@@ -1,3 +1,4 @@
+import 'package:attendance_system/core/common/custom_button.dart';
 import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -61,35 +62,50 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (!biometricEnabled)
-      return const SizedBox.shrink(); // Hide if not enabled
+    if (!biometricEnabled) return const SizedBox.shrink();
 
-    return GestureDetector(
-      onTap: _authenticateWithBiometrics, // Only when tapped
-      child: Column(
-        children: [
-          SizedBox(height: 10.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.fingerprint,
-                color: const Color(0xff004E64),
-                size: 40.sp,
-              ),
-              SizedBox(width: 10.w),
-              Text(
-                "Tap to Login with Biometric",
-                style: TextStyle(
-                  fontSize: 14.sp,
-                  color: const Color(0xff004E64),
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
+    // Hide if not enabled
+    return CustomButton(
+      text: "Tap to Login with Biometric",
+      textColor: Color(0xff004E64),
+      onPressed: _authenticateWithBiometrics,
+      backgroundColor: Colors.white,
+      borderColor: Color(0xff004E64),
+      prefixIcon: Icon(Icons.fingerprint),
+      iconColor: Color(0xff004E64),
     );
+    // return GestureDetector(
+    //   onTap: _authenticateWithBiometrics, // Only when tapped
+    //   child: Column(
+    //     children: [
+    //       Container(
+    //         decoration: BoxDecoration(
+    //           border: Border.all(color: Color(0xff004E64), width: 1.0),
+    //           borderRadius: BorderRadius.circular(20),
+    //         ),
+
+    //         child: Row(
+    //           mainAxisAlignment: MainAxisAlignment.center,
+    //           children: [
+    //             Icon(
+    //               Icons.fingerprint,
+    //               color: const Color(0xff004E64),
+    //               size: 40.sp,
+    //             ),
+    //             SizedBox(width: 10.w),
+    //             Text(
+    //               "Tap to Login with Biometric",
+    //               style: TextStyle(
+    //                 fontSize: 14.sp,
+    //                 color: const Color(0xff004E64),
+    //                 fontWeight: FontWeight.w600,
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 }

@@ -61,175 +61,148 @@ class _LeaveRequestTablePageState extends State<LeaveRequestTablePage> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-      child:
-          isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : SingleChildScrollView(
-                child: Card(
-                  elevation: 2,
-                  color: Colors.white,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 5),
-                      // Request Leave Title
-                      Padding(
-                        padding: AppPadding.cardPadding,
-                        child: Text(
-                          'Leave Requests',
-                          style:
-                              context
-                                  .textStyle(palette: ColorPalette.sherpa_blue)
-                                  .header6
-                                  .bold,
-                        ),
-                      ),
-                      // Table
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          columns: [
-                            DataColumn(
-                              label: Text(
-                                'Leave Type',
-                                style:
-                                    context
-                                        .textStyle(
-                                          palette: ColorPalette.sherpa_blue,
-                                        )
-                                        .medium,
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Start Date',
-                                style:
-                                    context
-                                        .textStyle(
-                                          palette: ColorPalette.sherpa_blue,
-                                        )
-                                        .medium,
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'End Date',
-                                style:
-                                    context
-                                        .textStyle(
-                                          palette: ColorPalette.sherpa_blue,
-                                        )
-                                        .medium,
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Reason',
-                                style:
-                                    context
-                                        .textStyle(
-                                          palette: ColorPalette.sherpa_blue,
-                                        )
-                                        .medium,
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Status',
-                                style:
-                                    context
-                                        .textStyle(
-                                          palette: ColorPalette.sherpa_blue,
-                                        )
-                                        .medium,
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Requested On',
-                                style:
-                                    context
-                                        .textStyle(
-                                          palette: ColorPalette.sherpa_blue,
-                                        )
-                                        .medium,
-                              ),
-                            ),
-                          ],
-                          rows:
-                              requestList.isEmpty
-                                  ? [
-                                    const DataRow(
-                                      cells: [
-                                        DataCell(Text('-')),
-                                        DataCell(Text('-')),
-                                        DataCell(Text('-')),
-                                        DataCell(Text('-')),
-                                        DataCell(Text('-')),
-                                        DataCell(Text('-')),
-                                      ],
-                                    ),
-                                  ]
-                                  : requestList.map((entry) {
-                                    return DataRow(
-                                      cells: [
-                                        DataCell(
-                                          Text(
-                                            displayText(
-                                              entry.leavePolicy?.leaveType,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            displayText(
-                                              entry.startDate != null
-                                                  ? formatDateOnly(
-                                                    entry.startDate!,
-                                                  )
-                                                  : null,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            displayText(
-                                              entry.endDate != null
-                                                  ? formatDateOnly(
-                                                    entry.endDate!,
-                                                  )
-                                                  : null,
-                                            ),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(displayText(entry.reason)),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            displayText(entry.status?.status),
-                                          ),
-                                        ),
-                                        DataCell(
-                                          Text(
-                                            displayText(
-                                              entry.createdAt != null
-                                                  ? formatDateOnly(
-                                                    entry.createdAt!,
-                                                  )
-                                                  : null,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    );
-                                  }).toList(),
-                        ),
-                      ),
-                    ],
-                  ),
+      child: SingleChildScrollView(
+        child: Card(
+          elevation: 2,
+          color: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 5),
+              // Request Leave Title
+              Padding(
+                padding: AppPadding.cardPadding,
+                child: Text(
+                  'Leave Requests',
+                  style:
+                      context
+                          .textStyle(palette: ColorPalette.sherpa_blue)
+                          .header6
+                          .bold,
                 ),
               ),
+              // Table
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: DataTable(
+                  columns: [
+                    DataColumn(
+                      label: Text(
+                        'Leave Type',
+                        style:
+                            context
+                                .textStyle(palette: ColorPalette.sherpa_blue)
+                                .medium,
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Start Date',
+                        style:
+                            context
+                                .textStyle(palette: ColorPalette.sherpa_blue)
+                                .medium,
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'End Date',
+                        style:
+                            context
+                                .textStyle(palette: ColorPalette.sherpa_blue)
+                                .medium,
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Reason',
+                        style:
+                            context
+                                .textStyle(palette: ColorPalette.sherpa_blue)
+                                .medium,
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Status',
+                        style:
+                            context
+                                .textStyle(palette: ColorPalette.sherpa_blue)
+                                .medium,
+                      ),
+                    ),
+                    DataColumn(
+                      label: Text(
+                        'Requested On',
+                        style:
+                            context
+                                .textStyle(palette: ColorPalette.sherpa_blue)
+                                .medium,
+                      ),
+                    ),
+                  ],
+                  rows:
+                      requestList.isEmpty
+                          ? [
+                            const DataRow(
+                              cells: [
+                                DataCell(Text('-')),
+                                DataCell(Text('-')),
+                                DataCell(Text('-')),
+                                DataCell(Text('-')),
+                                DataCell(Text('-')),
+                                DataCell(Text('-')),
+                              ],
+                            ),
+                          ]
+                          : requestList.map((entry) {
+                            return DataRow(
+                              cells: [
+                                DataCell(
+                                  Text(
+                                    displayText(entry.leavePolicy?.leaveType),
+                                  ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    displayText(
+                                      entry.startDate != null
+                                          ? formatDateOnly(entry.startDate!)
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                                DataCell(
+                                  Text(
+                                    displayText(
+                                      entry.endDate != null
+                                          ? formatDateOnly(entry.endDate!)
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                                DataCell(Text(displayText(entry.reason))),
+                                DataCell(
+                                  Text(displayText(entry.status?.status)),
+                                ),
+                                DataCell(
+                                  Text(
+                                    displayText(
+                                      entry.createdAt != null
+                                          ? formatDateOnly(entry.createdAt!)
+                                          : null,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

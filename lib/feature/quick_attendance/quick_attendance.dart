@@ -50,17 +50,16 @@ class _QuickAttendanceState extends State<QuickAttendance> {
   }
 
   void biometricAutoLogin(String username, String password) async {
-    // Ask user to choose Check In / Check Out
     String? action = await showDialog<String>(
       context: context,
       builder:
           (context) => AlertDialog(
             shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.r),
             ),
-            titlePadding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-            contentPadding: const EdgeInsets.fromLTRB(24, 12, 24, 0),
-            actionsPadding: const EdgeInsets.only(right: 16, bottom: 12),
+            titlePadding: EdgeInsets.fromLTRB(24.r, 24.r, 24.r, 0),
+            contentPadding: EdgeInsets.fromLTRB(24.r, 12.r, 24.r, 0),
+            actionsPadding: EdgeInsets.only(right: 16.r, bottom: 12.r),
             title: const Text(
               "Choose Action",
               style: TextStyle(
@@ -79,11 +78,11 @@ class _QuickAttendanceState extends State<QuickAttendance> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 10.h,
                   ),
                 ),
                 child: const Text(
@@ -96,11 +95,11 @@ class _QuickAttendanceState extends State<QuickAttendance> {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 10,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 10.h,
                   ),
                 ),
                 child: const Text(
@@ -125,7 +124,6 @@ class _QuickAttendanceState extends State<QuickAttendance> {
 
   Future<void> _askToEnableBiometric(String username, String password) async {
     final _secureStorage = const FlutterSecureStorage();
-
     final alreadyEnabled =
         await _secureStorage.read(key: 'biometric_enabled') == 'true';
     if (alreadyEnabled) return;
@@ -208,8 +206,6 @@ class _QuickAttendanceState extends State<QuickAttendance> {
           ShowDialog(
             context: context,
           ).showSucessStateDialog(body: response['message']);
-
-          // Ask to enable biometric only after success
           await _askToEnableBiometric(email, password);
         } else {
           ShowDialog(
@@ -229,155 +225,136 @@ class _QuickAttendanceState extends State<QuickAttendance> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xff004E64),
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Stack(
-          children: [
-            SafeArea(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SizedBox(height: 110.h),
-
-                  // Avatar
-                  Container(
-                    width: 100.w,
-                    height: 100.h,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10.r,
-                          offset: Offset(0, 4),
-                        ),
-                      ],
-                      border: Border.all(color: Colors.white, width: 1),
-                    ),
-                    child: ClipOval(
-                      child: Image.asset(
-                        'assets/images/logo.png',
-                        width: 100.w,
-                        height: 100.h,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-
-                  SizedBox(height: 15.h),
-
-                  Text(
-                    'COSMO HRIS',
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-
-                  SizedBox(height: 20.h),
-
-                  SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Container(
-                      width: double.infinity,
-                      height: 515.h,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: 25.w,
-                        vertical: 20.h,
-                      ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: [
+                    SizedBox(height: 80.h),
+                    Container(
+                      width: 120.w,
+                      height: 120.w,
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(30.r),
-                          topRight: Radius.circular(30.r),
-                        ),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 10.r,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                        border: Border.all(color: Colors.white, width: 1.w),
                       ),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Fill your details',
-                              style: TextStyle(
-                                color: Color(0xff004E64),
-                                fontSize: 20.sp,
-                                fontWeight: FontWeight.w700,
-                              ),
-                            ),
-                            SizedBox(height: 20.h),
-
-                            CustomTextfield(
-                              controller: emailController,
-                              hint: 'Enter Your Email',
-                              label: 'Email',
-                              prefixIcon: const Icon(Icons.email),
-                              validator: Validation.validUserName,
-                            ),
-                            SizedBox(height: 20.h),
-
-                            CustomTextfield(
-                              controller: passwordController,
-                              hint: 'Enter your password',
-                              label: 'Password',
-                              isPassword: true,
-                              prefixIcon: Icon(Icons.lock),
-                              validator: Validation.passwordValidation,
-                            ),
-                            SizedBox(height: 20.h),
-
-                            CustomDropdown(
-                              selectedValue: selectedOption,
-                              items: optionList,
-                              label: 'Select Options',
-                              onChanged: (value) {
-                                setState(() {
-                                  selectedOption = value ?? '';
-                                });
-                              },
-                            ),
-                            SizedBox(height: 15.h),
-
-                            CustomButton(
-                              text: 'Quick Attendance',
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  HandlequickAttendance();
-                                }
-                              },
-                            ),
-
-                            SizedBox(height: 20.h),
-
-                            CustomButton(
-                              backgroundColor: Colors.white,
-                              borderColor: const Color(0xff004E64),
-                              textColor: Color(0xff004E64),
-                              text: 'Log In',
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const Loginpage(),
-                                  ),
-                                );
-                              },
-                            ),
-
-                            SizedBox(height: 10.h),
-
-                            BiometricLoginScreen(onLogin: biometricAutoLogin),
-                          ],
+                      child: ClipOval(
+                        child: Image.asset(
+                          'assets/images/logo.png',
+                          width: 100.w,
+                          height: 100.w,
+                          fit: BoxFit.cover,
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    SizedBox(height: 15.h),
+                    Text(
+                      'COSMO HRIS',
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 30.h),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 25.w,
+                          vertical: 20.h,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(30.r),
+                            topRight: Radius.circular(30.r),
+                          ),
+                        ),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Fill your details',
+                                style: TextStyle(
+                                  color: Color(0xff004E64),
+                                  fontSize: 20.sp,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                              SizedBox(height: 20.h),
+                              CustomTextfield(
+                                controller: emailController,
+                                hint: 'Enter Your Email',
+                                label: 'Email',
+                                prefixIcon: const Icon(Icons.email),
+                                validator: Validation.validUserName,
+                              ),
+                              SizedBox(height: 20.h),
+                              CustomTextfield(
+                                controller: passwordController,
+                                hint: 'Enter your password',
+                                label: 'Password',
+                                isPassword: true,
+                                prefixIcon: Icon(Icons.lock),
+                                validator: Validation.passwordValidation,
+                              ),
+                              SizedBox(height: 20.h),
+                              CustomDropdown(
+                                selectedValue: selectedOption,
+                                items: optionList,
+                                label: 'Select Options',
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedOption = value ?? '';
+                                  });
+                                },
+                              ),
+                              SizedBox(height: 15.h),
+                              CustomButton(
+                                text: 'Quick Attendance',
+                                onPressed: HandlequickAttendance,
+                              ),
+                              SizedBox(height: 20.h),
+                              CustomButton(
+                                backgroundColor: Colors.white,
+                                borderColor: const Color(0xff004E64),
+                                textColor: Color(0xff004E64),
+                                text: 'Log In',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const Loginpage(),
+                                    ),
+                                  );
+                                },
+                              ),
+                              SizedBox(height: 10.h),
+                              BiometricLoginScreen(onLogin: biometricAutoLogin),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

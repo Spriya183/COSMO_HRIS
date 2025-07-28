@@ -1,6 +1,9 @@
+import 'package:attendance_system/constant/app_color.dart';
+import 'package:attendance_system/constant/color_extention.dart';
 import 'package:attendance_system/constant/custom_app_padding.dart';
 import 'package:attendance_system/core/common/custom_base_page.dart';
 import 'package:attendance_system/core/common/custom_date_time_converter.dart';
+import 'package:attendance_system/core/typography/font_style_extentions.dart';
 import 'package:attendance_system/feature/common/menubar_drawer.dart';
 import 'package:attendance_system/feature/profile/imagePreview.dart';
 import 'package:attendance_system/service/api_url.dart';
@@ -9,13 +12,13 @@ import 'package:attendance_system/api_services/employee_authentication_api_servi
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ProfilePage extends StatefulWidget {
-  final GlobalKey<ScaffoldState> scaffoldKey;
-  final Function(bool) onDrawerChanged;
+  // final GlobalKey<ScaffoldState> scaffoldKey;
+  // final Function(bool) onDrawerChanged;
 
   const ProfilePage({
     super.key,
-    required this.scaffoldKey,
-    required this.onDrawerChanged,
+    // required this.scaffoldKey,
+    // required this.onDrawerChanged,
   });
 
   @override
@@ -84,21 +87,18 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return BasePage(
-      scaffoldKey: widget.scaffoldKey,
-      onDrawerChanged: widget.onDrawerChanged,
+      // scaffoldKey: widget.scaffoldKey,
+      // onDrawerChanged: widget.onDrawerChanged,
       title: const Text(
         'Profile Information',
         style: TextStyle(color: Colors.white),
       ),
       drawer: const MenubarDrawer(),
-      leadingWidget: Builder(
-        builder:
-            (context) => IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
-              onPressed: () => Scaffold.of(context).openDrawer(),
-            ),
+      leadingWidget: IconButton(
+        icon: const Icon(Icons.arrow_back, color: Colors.white),
+        onPressed: () => Navigator.of(context).pop(),
       ),
-      showBackButton: false,
+
       centerTitle: true,
       colors: const Color(0xff004E64),
       bodyColor: Colors.white,
@@ -170,52 +170,67 @@ class _ProfilePageState extends State<ProfilePage> {
                             BoxShadow(
                               color: Colors.black12,
                               blurRadius: 6.r,
-                              offset: const Offset(0, 2),
+                              offset: Offset(0, 2),
                             ),
                           ],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            buildInfoRow(
+                            Text(
+                              "Personal Information",
+                              style:
+                                  context
+                                      .textStyle(
+                                        palette: ColorPalette.sherpa_blue,
+                                      )
+                                      .header6,
+                            ),
+                            SizedBox(height: 16.h),
+                            buildStyledInfo(
                               Icons.phone,
                               "Phone Number",
-                              phoneNumber,
+                              phoneNumber!,
                             ),
                             buildDivider(),
-                            buildInfoRow(Icons.home, "Address", address),
+                            buildStyledInfo(Icons.home, "Address", address!),
                             buildDivider(),
-                            buildInfoRow(
+                            buildStyledInfo(
                               Icons.domain,
                               "Department",
-                              department,
+                              department!,
                             ),
                             buildDivider(),
-                            buildInfoRow(
+                            buildStyledInfo(
                               Icons.calendar_today,
                               "Date of Birth",
                               formatDateOnly(dob),
                             ),
                             buildDivider(),
-                            buildInfoRow(
+                            buildStyledInfo(
                               Icons.date_range,
                               "Date of Joining",
                               formatDateOnly(dateOfJoining),
                             ),
                             buildDivider(),
-                            buildInfoRow(Icons.person, "Gender", gender),
+                            buildStyledInfo(Icons.person, "Gender", gender!),
                             buildDivider(),
-                            buildInfoRow(Icons.verified_user, "Status", status),
+                            buildStyledInfo(
+                              Icons.verified_user,
+                              "Status",
+                              status!,
+                            ),
                             buildDivider(),
-                            buildInfoRow(
+                            buildStyledInfo(
                               Icons.bloodtype,
                               "Blood Group",
-                              bloodGroup,
+                              bloodGroup!,
                             ),
                           ],
                         ),
                       ),
                     ),
+
                     SizedBox(height: 5.h),
                   ],
                 ),
@@ -223,27 +238,25 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget buildInfoRow(IconData icon, String label, String? value) {
+  Widget buildStyledInfo(IconData icon, String title, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: Colors.black54),
-        SizedBox(width: 16.w),
+        Icon(icon, color: Color(0xff004E64), size: 20.r),
+        SizedBox(width: 12.w),
         Expanded(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                label,
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14.sp),
+                title,
+                style:
+                    context.textStyle(palette: ColorPalette.zinc).medium..bold,
               ),
-              Flexible(
-                child: Text(
-                  value ?? '-',
-                  style: TextStyle(fontSize: 14.sp),
-                  textAlign: TextAlign.right,
-                  maxLines: 2,
-                ),
+              SizedBox(height: 2.h),
+              Text(
+                value,
+                style: context.textStyle(palette: ColorPalette.zinc).small,
               ),
             ],
           ),
@@ -252,5 +265,10 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget buildDivider() => SizedBox(height: 15.h, child: const Divider());
+  Widget buildDivider() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 2.h),
+      child: Divider(color: Colors.grey[300], thickness: 1),
+    );
+  }
 }

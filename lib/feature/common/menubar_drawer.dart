@@ -101,16 +101,18 @@ class MenubarDrawer extends StatelessWidget {
               );
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.settings, color: Color(0xff004E64)),
-            title: const Text('Settings'),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SettingsPage()),
-              );
-            },
-          ),
+          // ListTile(
+          //   leading: const Icon(Icons.settings, color: Color(0xff004E64)),
+          //   title: const Text('Settings'),
+          //   onTap: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => SettingsPage(
+
+          //       )),
+          //     );
+          //   },
+          // ),
           ListTile(
             leading: const Icon(Icons.logout, color: Color(0xff004E64)),
             title: const Text('Logout'),

@@ -1,22 +1,12 @@
 import 'dart:convert';
 
-import 'package:attendance_system/service/config/config.dart';
+import 'package:attendance_system/service/api_url.dart';
 import 'package:http/http.dart' as http;
 
 class VerifyOtpApiServices {
-  static Future<Map<String, dynamic>> VerifyOtp(
-    String email,
-    int otp,
-    String password,
-    String confirmPassword,
-  ) async {
+  static Future<Map<String, dynamic>> VerifyOtp(String email, int otp) async {
     final url = Config.getVerifyOtp;
-    final requestBody = {
-      'email': email,
-      "otp": otp,
-      "password": password,
-      "confirmPassword": confirmPassword,
-    };
+    final requestBody = {'email': email, "otp": otp};
 
     try {
       final response = await http.post(

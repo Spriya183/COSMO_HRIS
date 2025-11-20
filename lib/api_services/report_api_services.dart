@@ -1,8 +1,9 @@
 import 'dart:convert';
-import 'package:attendance_system/model/attendance_model/report_model.dart';
+
+import 'package:attendance_system/model/response_model/report_model.dart';
+import 'package:attendance_system/service/api_url.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:attendance_system/service/config/config.dart';
 
 class ReportApiServices {
   static final _storage = FlutterSecureStorage();
@@ -14,15 +15,14 @@ class ReportApiServices {
     return cookie;
   }
 
-  static Future<Map<String, dynamic>> fetchReportRecord() async {
+  static Future<Map<String, dynamic>> fetchReportRecord({
+    required int year,
+    required int month,
+  }) async {
     final url = Config.getReportRecord;
 
     try {
       String? sessionCookie = await _getSessionCookie();
-
-      // Replace these values with actual logic if needed
-      final String month = DateTime.now().month.toString().padLeft(2, '0');
-      final String year = DateTime.now().year.toString();
 
       final response = await http.post(
         Uri.parse(url),
@@ -30,7 +30,7 @@ class ReportApiServices {
           'Content-Type': 'application/json',
           if (sessionCookie != null) 'Cookie': sessionCookie,
         },
-        body: jsonEncode({"month": month, "year": year}),
+        body: jsonEncode({"year": year, "month": month}),
       );
 
       print('Status Code: ${response.statusCode}');
@@ -45,23 +45,22 @@ class ReportApiServices {
       final responseBody = jsonDecode(response.body);
 
       if (response.statusCode == 200) {
-        final List<reportretrive> leaveRequests =
+        final List<ReportModel> attendanceRecords =
             (responseBody['data'] as List)
-                .map((item) => reportretrive.fromJson(item))
+                .map((item) => ReportModel.fromJson(item))
                 .toList();
 
         return {
           'status': true,
           'code': responseBody['code'],
           'message': responseBody['message'],
-          'data': leaveRequests,
+          'data': attendanceRecords,
         };
       } else {
         return {
           'status': false,
           'code': response.statusCode,
           'message': responseBody['message'] ?? 'Bad request',
-          'body': response.body,
         };
       }
     } catch (e) {

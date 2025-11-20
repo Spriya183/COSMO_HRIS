@@ -1,6 +1,6 @@
+import 'package:attendance_system/service/api_url.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:attendance_system/service/config/config.dart';
 
 class LogoutApiService {
   static Future<Map<String, dynamic>> employeeLogout() async {

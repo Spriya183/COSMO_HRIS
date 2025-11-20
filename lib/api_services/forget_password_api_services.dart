@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:attendance_system/service/config/config.dart';
+import 'package:attendance_system/service/api_url.dart';
 import 'package:http/http.dart' as http;
 
-class ForgetPasswordApiServices {
-  static Future<Map<String, dynamic>> forgetPassword(String email) async {
+class EmailVerificationApiServices {
+  static Future<Map<String, dynamic>> emailVerification(String email) async {
     final url = Config.getOtp;
     final requestBody = {'email': email};
 

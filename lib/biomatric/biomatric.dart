@@ -1,3 +1,5 @@
+import 'package:attendance_system/core/common/custom_button.dart';
+import 'package:attendance_system/core/common/custom_error_success_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -21,17 +23,14 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
   @override
   void initState() {
     super.initState();
-    _checkAndAutoLogin();
+    _checkBiometricStatus(); // ✅ Just check, don’t authenticate here
   }
 
-  Future<void> _checkAndAutoLogin() async {
-    biometricEnabled =
-        (await _secureStorage.read(key: 'biometric_enabled')) == 'true';
-    setState(() {});
-
-    if (biometricEnabled) {
-      _authenticateWithBiometrics();
-    }
+  Future<void> _checkBiometricStatus() async {
+    final isEnabled = await _secureStorage.read(key: 'biometric_enabled');
+    setState(() {
+      biometricEnabled = isEnabled == 'true';
+    });
   }
 
   Future<void> _authenticateWithBiometrics() async {
@@ -51,9 +50,9 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
         if (username != null && password != null) {
           widget.onLogin(username, password);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Stored credentials not found")),
-          );
+          ShowDialog(
+            context: context,
+          ).showErrorStateDialog(body: 'Stored credentials not found');
         }
       }
     } catch (e) {
@@ -65,21 +64,48 @@ class _BiometricLoginScreenState extends State<BiometricLoginScreen> {
   Widget build(BuildContext context) {
     if (!biometricEnabled) return const SizedBox.shrink();
 
-    return GestureDetector(
-      onTap: _authenticateWithBiometrics,
-      child: Container(
-        height: 50.h,
-        width: 50.w,
-        decoration: BoxDecoration(
-          border: Border.all(),
-          borderRadius: BorderRadius.circular(5.r),
-        ),
-        child: Icon(
-          Icons.fingerprint,
-          color: const Color(0xff004E64),
-          size: 0.1.sw,
-        ),
-      ),
+    // Hide if not enabled
+    return CustomButton(
+      text: "Tap to Login with Biometric",
+      textColor: Color(0xff004E64),
+      onPressed: _authenticateWithBiometrics,
+      backgroundColor: Colors.white,
+      borderColor: Color(0xff004E64),
+      prefixIcon: Icon(Icons.fingerprint),
+      iconColor: Color(0xff004E64),
     );
+    // return GestureDetector(
+    //   onTap: _authenticateWithBiometrics, // Only when tapped
+    //   child: Column(
+    //     children: [
+    //       Container(
+    //         decoration: BoxDecoration(
+    //           border: Border.all(color: Color(0xff004E64), width: 1.0),
+    //           borderRadius: BorderRadius.circular(20),
+    //         ),
+
+    //         child: Row(
+    //           mainAxisAlignment: MainAxisAlignment.center,
+    //           children: [
+    //             Icon(
+    //               Icons.fingerprint,
+    //               color: const Color(0xff004E64),
+    //               size: 40.sp,
+    //             ),
+    //             SizedBox(width: 10.w),
+    //             Text(
+    //               "Tap to Login with Biometric",
+    //               style: TextStyle(
+    //                 fontSize: 14.sp,
+    //                 color: const Color(0xff004E64),
+    //                 fontWeight: FontWeight.w600,
+    //               ),
+    //             ),
+    //           ],
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 }

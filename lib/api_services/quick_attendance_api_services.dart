@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:async';
+import 'package:attendance_system/model/request_model/quick_attendance_model.dart';
+import 'package:attendance_system/service/api_url.dart';
 import 'package:http/http.dart' as http;
-import 'package:attendance_system/model/authenticate_model/quick_attendance.dart';
-import 'package:attendance_system/service/config/config.dart';
 
 class QuickAttendanceApiServices {
   static Future<Map<String, dynamic>> quickAttendanceAuthentication(
@@ -12,7 +12,7 @@ class QuickAttendanceApiServices {
     String action,
   ) async {
     final url = Config.getquickattendance;
-    final requestBody = QuickAttendance(
+    final requestBody = QuickAttendanceModel(
       email: email,
       password: password,
       action: action,
